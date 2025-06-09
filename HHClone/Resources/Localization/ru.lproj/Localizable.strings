@@ -1,0 +1,11 @@
+"common_continue"="Продолжить";
+
+"loginScreen_title"="Вход в личный кабинет";
+
+"loginScreen_searchWork"="Поиск работы";
+"loginScreen_emailOrPhone"="Электронная почта или телефон";
+"loginScreen_loginWithPassword"="Войти с паролем";
+
+"loginScreen_searchEmployees_title"="Поиск сотрудников";
+"loginScreen_searchEmployees_descr"="Размещение вакансий и доступ к базе резюме";
+"loginScreen_searchEmployees_buttonText"="Я ищу сотрудников";

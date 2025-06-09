@@ -1,0 +1,1 @@
+typealias AppImage = AssetImages.Images

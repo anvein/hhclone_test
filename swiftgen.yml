@@ -1,0 +1,35 @@
+xcassets:
+  - inputs:
+      - ./${TARGET_NAME}/Resources/Assets/Colors.xcassets
+    outputs:
+      templateName: swift5
+      output: ./${TARGET_NAME}/Resources/Generated/Colors.swift
+      params:
+        forceFileNameEnum: true
+        enumName: AssetColors
+
+  - inputs:
+      - ./${TARGET_NAME}/Resources/Assets/Images.xcassets
+    outputs:
+      templateName: swift5
+      output: ./${TARGET_NAME}/Resources/Generated/Images.swift
+      params:
+        forceFileNameEnum: true
+        enumName: AssetImages
+
+strings:
+  - inputs: ${TARGET_NAME}/Resources/Localization/ru.lproj/Localizable.strings
+    options:
+      separator: _
+    outputs:
+      templateName: structured-swift5 
+      output: ${TARGET_NAME}/Resources/Generated/LocalizableStrings.swift
+
+fonts:
+  inputs:
+    - ${TARGET_NAME}/Resources/Fonts
+  outputs:
+    templateName: swift5
+    output: ${TARGET_NAME}/Resources/Generated/Fonts.swift
+    params:
+      enumName: AppFont
