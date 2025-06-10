@@ -1,0 +1,17 @@
+
+*.xcuserstate
+*.xccheckout
+*.xcscmblueprint
+*.xcworkspace
+!default.xcworkspace
+
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+
+
+#Pods/
+#Podfile.lock
+.DS_Store
+
+.vscode/
+.idea/

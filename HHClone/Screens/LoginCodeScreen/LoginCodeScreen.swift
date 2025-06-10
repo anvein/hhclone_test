@@ -5,10 +5,16 @@ struct LoginCodeScreen: View {
 
     private let model: LoginCodeScreenModel
 
+    private let codeLenght: Int = 4
+
     @Binding private var path: [Route]
     @State private var isInvalidCode: Bool = false
     @State private var isFilledCode: Bool = false
     @State private var enteredCode: String?
+
+    @AppStorage(DefaultsKeys.isLoggedIn.rawValue) var isLoggedIn: Bool = false
+
+    // MARK: - Body
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -27,14 +33,8 @@ struct LoginCodeScreen: View {
 
             Spacer().frame(height: 20)
 
-            LoginCodeField(codeLength: 4) { isInvalidCode in
-                self.isInvalidCode = isInvalidCode
-            } onChangeIsFilledCode: { isFilledCode in
-                self.isFilledCode = isFilledCode
-            } onChangedEnteredCode: { enteredCode in
-                self.enteredCode = enteredCode
-            }
-            .frame(maxWidth: .infinity)
+            LoginCodeField(codeLength: codeLenght, enteredCode: $enteredCode)
+                .frame(maxWidth: .infinity)
 
             if isInvalidCode {
                 Text("Неверный код. Попробуйте еще раз")
@@ -61,10 +61,10 @@ struct LoginCodeScreen: View {
                                     .suiColor
                             )
                     )
-                    .disabled(isFilledCode)
                     .animation(.easeInOut, value: isFilledCode)
             }
             .frame(maxHeight: 48)
+            .disabled(!isFilledCode)
 
             HStack(alignment: .center) {
                 Button {
@@ -83,6 +83,12 @@ struct LoginCodeScreen: View {
         .background(AppColor.bgMain.suiColor)
         .navigationBarBackButtonHidden(true)
         .animation(.bouncy, value: isInvalidCode)
+        .onChange(of: enteredCode) { oldValue, newValue in
+            isFilledCode = newValue?.count == codeLenght ? true : false
+            if oldValue != newValue {
+                isInvalidCode = false
+            }
+        }
     }
 
     // MARK: - Init
@@ -99,6 +105,8 @@ struct LoginCodeScreen: View {
             // запросить метод проверки кода
             if enteredCode == "1111" {
                 isInvalidCode = false
+                isLoggedIn = true
+                path.removeLast()
             } else {
                 isInvalidCode = true
             }
@@ -129,6 +137,8 @@ enum LoginType: Hashable {
     case email(String)
     case phone(String)
 }
+
+// MARK: - Preview
 
 struct LoginCodeScreen_Previews: PreviewProvider {
     struct Container: View {

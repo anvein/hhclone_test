@@ -4,17 +4,12 @@ struct LoginCodeField: View {
 
     let codeLength: Int
 
-    @State var isFilledCode: Bool = false
-    @State var isInvalidCode: Bool = false
     @State var textFieldsValues: [String] = []
+    @Binding var enteredCode: String?
     @FocusState private var focusedField: Int?
-    @State var enteredCode: String?
 
-    typealias BoolCallback = ((Bool) -> Void)
     typealias OptionalStringCallback = ((String?) -> Void)
 
-    private var onChangeIsInvalidCode: BoolCallback?
-    private var onChangeIsFilledCode: BoolCallback?
     private var onChangedEnteredCode: OptionalStringCallback?
 
     var body: some View {
@@ -33,49 +28,23 @@ struct LoginCodeField: View {
                 .frame(maxWidth: 48, maxHeight: .infinity)
                 .background(AppColor.TextField.bgDarkGrey.suiColor)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
-                .onChange(of: textFieldsValues[index]) { newValue in
-                    let filtered = newValue.filter { $0.isNumber }
-                    let firstChar = filtered.first
-                    if let firstChar {
-                        textFieldsValues[index] = String(firstChar)
-
-                        let nextIndex = index + 1
-                        focusedField = textFieldsValues.indices.contains(nextIndex) ? nextIndex : nil
-                    } else {
-                        textFieldsValues[index] = ""
-                    }
-                    isInvalidCode = false
-
-                    updateEnteredCodeState()
-                    checkIsFilledCode()
-                }
+                .onChange(of: textFieldsValues[index], { oldValue, newValue in
+                    handleChangeTextInTextField(with: index, oldValue: oldValue, newValue: newValue)
+                })
                 .focused($focusedField, equals: index)
             }
         }
         .frame(height: 48)
-        .onChange(of: isInvalidCode) { newValue in
-            onChangeIsInvalidCode?(newValue)
-        }
-
-//        .onAppear {
-//            if textFieldsValues.isEmpty {
-//                textFieldsValues = .init(repeating: "", count: codeLength)
-//            }
-//        }
     }
 
     // MARK: -
 
     init(
         codeLength: Int,
-        onChangeIsInvalidCode: BoolCallback? = nil,
-        onChangeIsFilledCode: BoolCallback? = nil,
-        onChangedEnteredCode: OptionalStringCallback? = nil
+        enteredCode: Binding<String?>
     ) {
         self.codeLength = codeLength
-        self.onChangeIsInvalidCode = onChangeIsInvalidCode
-        self.onChangeIsFilledCode = onChangeIsFilledCode
-        self.onChangedEnteredCode = onChangedEnteredCode
+        self._enteredCode = enteredCode
 
         _textFieldsValues = State(
             initialValue: .init(repeating: "", count: codeLength)
@@ -84,31 +53,62 @@ struct LoginCodeField: View {
 
     // MARK: -
 
-    private func checkIsFilledCode() {
-        let newValue = enteredCode?.count == codeLength
-        if newValue != isFilledCode {
-            onChangeIsFilledCode?(newValue)
+    private func handleChangeTextInTextField(with index: Int, oldValue: String, newValue: String) {
+        // TODO: переделать на делегат UITextField
+        // backspace в пустом поле не работает
+        // переходит к предыдущему полю если ввести не цифру
+
+        defer {
+            updateEnteredCode()
         }
 
-        isFilledCode = newValue
+        guard newValue.count <= 1 else {
+            textFieldsValues[index] = oldValue
+            return
+        }
+
+        if !oldValue.isEmpty && newValue.isEmpty {
+            let prevIndex = index - 1
+            focusedField = textFieldsValues.indices.contains(prevIndex) ? prevIndex : focusedField
+            return
+        }
+
+        let filtered = newValue.filter { $0.isNumber }
+        let firstChar = filtered.first
+        if let firstChar {
+            textFieldsValues[index] = String(firstChar)
+
+            let nextIndex = index + 1
+            focusedField = textFieldsValues.indices.contains(nextIndex) ? nextIndex : nil
+        } else {
+            textFieldsValues[index] = ""
+        }
     }
 
-    private func updateEnteredCodeState() {
+    private func updateEnteredCode() {
         let code = textFieldsValues.joined()
         enteredCode = !code.isEmpty ? code : nil
-        onChangedEnteredCode?(enteredCode)
     }
 
 }
 
 
+// MARK: - Preview
 
-#Preview {
-    LoginCodeField(
-        codeLength: 4,
-        onChangeIsInvalidCode: nil,
-        onChangeIsFilledCode: nil,
-        onChangedEnteredCode: nil
-    )
-        .background(AppColor.bgMain.suiColor)
+struct LoginCodeField_Previews: PreviewProvider {
+    struct Container: View {
+        @State var enteredCode: String?
+
+        var body: some View {
+            LoginCodeField(
+                codeLength: 4,
+                enteredCode: $enteredCode
+            )
+        }
+    }
+
+    static var previews: some View {
+        Container()
+            .background(AppColor.bgMain.suiColor)
+    }
 }

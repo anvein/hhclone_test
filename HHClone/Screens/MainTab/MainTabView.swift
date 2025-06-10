@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MainTabView: View {
     @State private var selectedTab = 0
+    @AppStorage(DefaultsKeys.isLoggedIn.rawValue) private var isLoggedIn: Bool = false
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -32,12 +33,19 @@ struct MainTabView: View {
                 }
                 .tag(3)
 
-            Text("Профиль")
-                .tabItem {
-                    Image(systemName: "person.fill")
-                    Text("Профиль")
+            VStack {
+                Button {
+                    isLoggedIn = false
+                } label: {
+                    Text("Выйти")
+                        .padding(10)
                 }
-                .tag(4)
+            }
+            .tabItem {
+                Image(systemName: "person.fill")
+                Text("Профиль")
+            }
+            .tag(4)
         }
         .tint(AppColor.blueAccent.suiColor)
     }
