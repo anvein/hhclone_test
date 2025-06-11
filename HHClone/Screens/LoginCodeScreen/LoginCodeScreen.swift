@@ -47,24 +47,12 @@ struct LoginCodeScreen: View {
 
             Spacer().frame(height: 20)
 
-            Button(action: {
+            Button("Подтвердить") {
                 checkCode()
-            }) {
-                Text("Подтвердить")
-                    .font(AppFont.SFProDisplay.regular.suiFont(size: 16))
-                    .foregroundStyle(AppColor.Text.main.suiColor)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .fill(
-                                isFilledCode ? AppColor.Button.blue.suiColor : AppColor.Button.disableGrey
-                                    .suiColor
-                            )
-                    )
-                    .animation(.easeInOut, value: isFilledCode)
             }
-            .frame(maxHeight: 48)
+            .buttonStyle(RectangleBlueButtonStyle(isDisabled: !isFilledCode))
             .disabled(!isFilledCode)
+            .frame(maxHeight: 48)
 
             HStack(alignment: .center) {
                 Button {
@@ -72,8 +60,10 @@ struct LoginCodeScreen: View {
                 } label: {
                     Text("Отменить")
                         .font(AppFont.SFProDisplay.regular.suiFont(size: 16))
+                        .foregroundStyle(AppColor.Text.accentBlue.suiColor)
                         .padding(10)
                 }
+                .buttonStyle(StandardButtonStyle())
             }
             .frame(maxWidth: .infinity)
 

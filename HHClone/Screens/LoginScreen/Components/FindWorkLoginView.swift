@@ -73,34 +73,14 @@ struct FindWorkLoginView: View {
                 Spacer().frame(height: 16)
 
                 HStack(spacing: 26) {
-                    Button(action: {
+                    Button(L10n.Common.continue) {
                         // провести UI-валидацию, обновить вьюху, если невалидно
                         guard !userEmailOrPhone.isEmpty else {
                             print("Не введен emain / phone")
                             return
                         }
                         onLoginAsWorkerTap?(userEmailOrPhone)
-                    }) {
-                        Text(L10n.Common.continue)
-                            .font(AppFont.SFProDisplay.regular.suiFont(size: 14))
-                            .foregroundStyle(
-                                isActive
-                                ? AppColor.Text.main.suiColor
-                                : AppColor.Text.accentBlue.suiColor
-                            )
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(
-                                Group {
-                                    if isActive {
-                                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                            .fill(AppColor.Button.blue.suiColor)
-                                            .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 4)
-                                    } else {
-                                        Color.clear
-                                    }
-                                }.animation(.easeInOut(duration: 0.2), value: isActive)
-                            )
-                    }
+                    }.buttonStyle(RectangleBlueFillableButtonStyle(isFilled: isActive))
 
                     Button {
                         print("Нажата кнопка \"Войти с паролем\"")

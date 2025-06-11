@@ -16,22 +16,11 @@ struct FindEmployeeLoginView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.top, -2)
 
-            Button(action: {
+            Button(L10n.LoginScreen.SearchEmployees.buttonText) {
                 print("Нажата кнопка Я ищу сотрудников")
-            }) {
-                Text(L10n.LoginScreen.SearchEmployees.buttonText)
-                    .font(AppFont.SFProDisplay.regular.suiFont(size: 14))
-                    .foregroundStyle(AppColor.Text.main.suiColor)
-                    .shadow(color: Color.black.opacity(0.5), radius: 4, x: 0, y: 4)
-                    .padding(.vertical, 7)
-                    .frame(maxWidth: .infinity)
-                    .background(
-                        Capsule(style: .circular)
-                            .fill(AppColor.Button.green.suiColor)
-                    )
             }
+            .buttonStyle(CapsuleButtonStyle(verticalPadding: 7))
             .padding(.top, 8)
-
         }
         .padding(.vertical, 22)
         .padding(.horizontal, 16)
