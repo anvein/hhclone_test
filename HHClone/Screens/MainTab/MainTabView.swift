@@ -6,29 +6,30 @@ struct MainTabView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-
-        Text("Поиск")
-            .tabItem {
-                Label("Home", systemImage: "house")
-            }
-            .tag(0)
+            SearchTab()
+                .tabItem {
+                    Image(uiImage: AppImage.Icons.search.image)
+                    Text("Поиск")
+                }
+                .tag(0)
 
             Text("Избранное")
                 .tabItem {
-                    Label("Избранное", systemImage: "suit.heart")
+                    Image(uiImage: AppImage.Icons.heart.image)
+                    Text("Избранное")
                 }
                 .tag(1)
 
             Text("Отклики")
                 .tabItem {
-                    Image(systemName: "envelope")
+                    Image(uiImage: AppImage.Icons.envelop.image)
                     Text("Отклики")
                 }
                 .tag(2)
 
             Text("Сообщения")
                 .tabItem {
-                    Image(systemName: "message")
+                    Image(uiImage: AppImage.Icons.messages.image)
                     Text("Сообщения")
                 }
                 .tag(3)
@@ -42,17 +43,18 @@ struct MainTabView: View {
                 }
             }
             .tabItem {
-                Image(systemName: "person.fill")
+                Image(uiImage: AppImage.Icons.person.image)
                 Text("Профиль")
             }
             .tag(4)
+            .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
         }
-        .tint(AppColor.blueAccent.suiColor)
+        .tint(Color.Text.accentBlue)
+
     }
+
 }
 
 #Preview {
     MainTabView()
 }
-
-

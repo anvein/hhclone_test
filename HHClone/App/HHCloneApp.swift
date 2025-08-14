@@ -8,9 +8,4 @@ struct HHCloneApp: App {
             ContentView()
         }
     }
-
-    init() {
-        UITabBar.appearance().unselectedItemTintColor = AppColor.Text.grey.color
-//        UITextField.appearance().tintColor = .white
-    }
 }

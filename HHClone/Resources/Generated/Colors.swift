@@ -28,12 +28,24 @@ internal enum AssetColors {
       internal static let blue = ColorAsset(name: "Button/blue")
       internal static let disableGrey = ColorAsset(name: "Button/disableGrey")
       internal static let green = ColorAsset(name: "Button/green")
+      internal static let grey = ColorAsset(name: "Button/grey")
+    }
+    internal enum Icons {
+      internal static let bgBlue = ColorAsset(name: "Icons/bgBlue")
+      internal static let bgGreen = ColorAsset(name: "Icons/bgGreen")
+      internal static let iconBlue = ColorAsset(name: "Icons/iconBlue")
+      internal static let iconGreen = ColorAsset(name: "Icons/iconGreen")
+    }
+    internal enum TabBar {
+      internal static let separator = ColorAsset(name: "TabBar/separator")
     }
     internal enum Text {
       internal static let accentBlue = ColorAsset(name: "Text/accentBlue")
-      internal static let grey = ColorAsset(name: "Text/grey")
+      internal static let green = ColorAsset(name: "Text/green")
       internal static let main = ColorAsset(name: "Text/main")
+      internal static let mainReversed = ColorAsset(name: "Text/mainReversed")
       internal static let redError = ColorAsset(name: "Text/redError")
+      internal static let second = ColorAsset(name: "Text/second")
     }
     internal enum TextField {
       internal static let bgDarkGrey = ColorAsset(name: "TextField/bgDarkGrey")
@@ -41,6 +53,11 @@ internal enum AssetColors {
     internal static let bgMain = ColorAsset(name: "bgMain")
     internal static let bgSecondary = ColorAsset(name: "bgSecondary")
     internal static let blueAccent = ColorAsset(name: "blueAccent")
+    internal static let grey1 = ColorAsset(name: "grey1")
+    internal static let grey2 = ColorAsset(name: "grey2")
+    internal static let grey3 = ColorAsset(name: "grey3")
+    internal static let grey4 = ColorAsset(name: "grey4")
+    internal static let grey5 = ColorAsset(name: "grey5")
   }
 }
 // swiftlint:enable identifier_name line_length nesting type_body_length type_name

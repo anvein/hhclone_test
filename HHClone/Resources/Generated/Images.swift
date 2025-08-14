@@ -23,8 +23,28 @@ internal typealias AssetImageTypeAlias = ImageAsset.Image
 // swiftlint:disable identifier_name line_length nesting type_body_length type_name
 internal enum AssetImages {
   internal enum Images {
+    internal enum Icons {
+      internal static let employerVerify = ImageAsset(name: "Icons/employerVerify")
+      internal static let envelop = ImageAsset(name: "Icons/envelop")
+      internal static let geotag = ImageAsset(name: "Icons/geotag")
+      internal static let heartFill = ImageAsset(name: "Icons/heart.fill")
+      internal static let heart = ImageAsset(name: "Icons/heart")
+      internal static let list = ImageAsset(name: "Icons/list")
+      internal static let messages = ImageAsset(name: "Icons/messages")
+      internal static let person = ImageAsset(name: "Icons/person")
+      internal static let search = ImageAsset(name: "Icons/search")
+      internal static let sortArrows = ImageAsset(name: "Icons/sortArrows")
+      internal static let star = ImageAsset(name: "Icons/star")
+      internal static let statisticEye = ImageAsset(name: "Icons/statisticEye")
+      internal static let statisticPerson = ImageAsset(name: "Icons/statisticPerson")
+      internal static let suitcase = ImageAsset(name: "Icons/suitcase")
+      internal static let userAvatarGirlDummy = ImageAsset(name: "Icons/userAvatarGirlDummy")
+    }
     internal static let pixelperfectLogin = ImageAsset(name: "PIXEL_PERFECT_login")
     internal static let pixelperfectLogin2 = ImageAsset(name: "PIXEL_PERFECT_login2")
+    internal static let pixelperfectResponseSheet = ImageAsset(name: "PIXEL_PERFECT_response_sheet")
+    internal static let pixelperfectResponseSheetSmall = ImageAsset(name: "PIXEL_PERFECT_response_sheet_small")
+    internal static let pixelperfectVacancyDetail = ImageAsset(name: "PIXEL_PERFECT_vacancy_detail")
     internal static let aaa = ImageAsset(name: "aaa")
   }
 }
