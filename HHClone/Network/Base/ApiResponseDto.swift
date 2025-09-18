@@ -1,0 +1,1 @@
+protocol ApiResponseDto: Decodable { }

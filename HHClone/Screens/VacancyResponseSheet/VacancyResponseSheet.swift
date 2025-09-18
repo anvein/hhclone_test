@@ -58,7 +58,7 @@ struct VacancyResponseSheet: View {
         .presentationDragIndicator(.visible)
         .presentationCornerRadius(8)
         .presentationBackground(.bgMain)
-        .getContentHeight(height: $contentHeight)
+        .getContentSize(height: $contentHeight)
     }
 
 }

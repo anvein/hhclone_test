@@ -2,7 +2,7 @@ import SwiftUI
 
 struct VacancyListRowView: View {
 
-    @Binding private var vacancy: Vacancy
+    @Binding private var vacancy: VacancyRowViewModel
     private var onTapAddToFavourite: (() -> Void)?
     private var onTapApplyToVacancy: (() -> Void)?
 
@@ -11,7 +11,7 @@ struct VacancyListRowView: View {
             HStack(alignment: .top) {
                 VStack(spacing: 10) {
                     Group {
-                        Text("Сейчас просматривает 1 человек")
+                        Text(vacancy.viewersNowText)
                             .font(TextStyle.title14)
                             .foregroundStyle(AppColor.Text.green.suiColor)
 
@@ -19,39 +19,40 @@ struct VacancyListRowView: View {
                             .font(TextStyle.title16)
                             .fixedSize(horizontal: false, vertical: true)
 
-
-//                        if let salaryText = vacancy.salaryRangeText {
-//                            Text("\(salaryText)")
-//                                .font(TextStyle.title20)
-//                        }
+                        if let salaryText = vacancy.salaryRangeText {
+                            Text("\(salaryText)")
+                                .font(TextStyle.title20)
+                        }
 
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(vacancy.address.city)
+                            Text(vacancy.employerCity)
                                 .font(TextStyle.text14)
 
                             HStack(spacing: 8) {
                                 Text(vacancy.employerTitle)
                                     .font(TextStyle.title14)
 
-                                Image(uiImage: AppImage.Icons.employerVerify.image)
-                                    .resizable()
-                                    .tint(AppColor.grey3.suiColor)
-                                    .frame(width: 16, height: 16)
+                                if vacancy.isEmployerVerify {
+                                    Image(uiImage: AppImage.Icons.employerVerify.image)
+                                        .resizable()
+                                        .tint(AppColor.grey3.suiColor)
+                                        .frame(width: 16, height: 16)
+                                }
                             }
                         }
 
-                        if let experienceText {
+                        if let experience = vacancy.experienceText {
                             HStack(alignment: .center, spacing: 8) {
                                 Image(uiImage: AppImage.Icons.suitcase.image)
                                     .resizable()
                                     .frame(width: 16, height: 16)
 
-                                Text(experienceText)
+                                Text(experience)
                                     .font(TextStyle.text14)
                             }
                         }
 
-                        Text("Опубликовано 14 февраля")
+                        Text(vacancy.publishedAtText)
                             .font(TextStyle.text14)
                             .foregroundStyle(AppColor.grey3.suiColor)
                     }
@@ -91,7 +92,7 @@ struct VacancyListRowView: View {
     }
 
     init(
-        vacancy: Binding<Vacancy>,
+        vacancy: Binding<VacancyRowViewModel>,
         onTapAddToFavourite: (() -> Void)? = nil,
         onTapApplyToVacancy: (() -> Void)? = nil
     ) {
@@ -100,25 +101,13 @@ struct VacancyListRowView: View {
         self.onTapApplyToVacancy = onTapApplyToVacancy
     }
 
-    // MARK: - Prepare data
-
-    var experienceText: String? {
-        guard let experience = vacancy.experience else { return nil }
-
-        if experience == .no {
-            return experience.text.capitalizingFirstLetter()
-        } else {
-            return "Опыт \(experience.text)"
-        }
-    }
-
 }
 
 // MARK: - Preview
 
 struct VacancyRowView_Previews: PreviewProvider {
     struct Container: View {
-        @State var vacancy: Vacancy = .testVacancy
+        @State var vacancy: VacancyRowViewModel = .init(vacancy: .testVacancy)
 
         var body: some View {
             VacancyListRowView(vacancy: $vacancy)
@@ -127,7 +116,6 @@ struct VacancyRowView_Previews: PreviewProvider {
 
     static var previews: some View {
         Container()
-            .padding(.vertical, 150)
             .background(.black)
     }
 

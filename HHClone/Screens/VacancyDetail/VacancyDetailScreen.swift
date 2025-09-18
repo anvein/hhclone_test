@@ -41,8 +41,10 @@ struct VacancyDetailScreen: View {
                 viewModel.isShowResponseSheet = true
             }
 
+#if DEBUG
             // TODO: УДАЛИТЬ!!! КОД ДЛЯ РАЗРАБОТКИ!!!
-//            PixelPerfectScreenSui(imageName: "PIXEL_PERFECT_vacancy_detail")
+            PixelPerfectScreenSui(imageName: "PIXEL_PERFECT_vacancy_detail")
+#endif
         }
         .background(.bgMain)
         .sheet(isPresented: Binding(
@@ -60,6 +62,9 @@ struct VacancyDetailScreen: View {
         }
         .onChange(of: viewModel.isShowResponseSheet) {
             viewModel.resetResponseSheetIfNeeded()
+        }
+        .onAppear {
+            viewModel.loadVacancy()
         }
     }
 
@@ -221,7 +226,7 @@ struct VacancyDetailScreen_Previews: PreviewProvider {
                     EmptyView()
                         .navigationDestination(for: String.self) { view in
                             VacancyDetailScreen(
-                                viewModel: .init(vacancy: .testVacancy)
+                                viewModel: .init(vacancyId: Vacancy.testVacancy.id)
                             )
                         }
                         .onAppear {

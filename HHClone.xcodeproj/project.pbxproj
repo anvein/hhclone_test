@@ -6,13 +6,30 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		360054C42E785BA400D8ACEC /* Shimmer in Frameworks */ = {isa = PBXBuildFile; productRef = 360054C32E785BA400D8ACEC /* Shimmer */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		36F944632DF06D1300E9B2CD /* HHClone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HHClone.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		361D0AE72E6033A3008FB0BF /* Exceptions for "HHClone" folder in "HHClone" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Config/Info.plist,
+			);
+			target = 36F944622DF06D1300E9B2CD /* HHClone */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		36F944652DF06D1300E9B2CD /* HHClone */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				361D0AE72E6033A3008FB0BF /* Exceptions for "HHClone" folder in "HHClone" target */,
+			);
 			path = HHClone;
 			sourceTree = "<group>";
 		};
@@ -23,16 +40,25 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				360054C42E785BA400D8ACEC /* Shimmer in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		360054C22E785BA400D8ACEC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		36F9445A2DF06D1300E9B2CD = {
 			isa = PBXGroup;
 			children = (
 				36F944652DF06D1300E9B2CD /* HHClone */,
+				360054C22E785BA400D8ACEC /* Frameworks */,
 				36F944642DF06D1300E9B2CD /* Products */,
 			);
 			sourceTree = "<group>";
@@ -66,6 +92,7 @@
 			);
 			name = HHClone;
 			packageProductDependencies = (
+				360054C32E785BA400D8ACEC /* Shimmer */,
 			);
 			productName = hhClone;
 			productReference = 36F944632DF06D1300E9B2CD /* HHClone.app */;
@@ -96,6 +123,9 @@
 			);
 			mainGroup = 36F9445A2DF06D1300E9B2CD;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				360054C12E785B9A00D8ACEC /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 36F944642DF06D1300E9B2CD /* Products */;
 			projectDirPath = "";
@@ -289,6 +319,7 @@
 				DEVELOPMENT_TEAM = 246CANGAHU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = HHClone/Config/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -318,6 +349,7 @@
 				DEVELOPMENT_TEAM = 246CANGAHU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = HHClone/Config/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -359,6 +391,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		360054C12E785B9A00D8ACEC /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/markiv/SwiftUI-Shimmer";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		360054C32E785BA400D8ACEC /* Shimmer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 360054C12E785B9A00D8ACEC /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */;
+			productName = Shimmer;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 36F9445B2DF06D1300E9B2CD /* Project object */;
 }

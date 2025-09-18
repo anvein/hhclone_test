@@ -36,6 +36,11 @@ internal enum AssetColors {
       internal static let iconBlue = ColorAsset(name: "Icons/iconBlue")
       internal static let iconGreen = ColorAsset(name: "Icons/iconGreen")
     }
+    internal enum Shimmer {
+      internal static let textGreen1 = ColorAsset(name: "Shimmer/textGreen1")
+      internal static let textGrey1 = ColorAsset(name: "Shimmer/textGrey1")
+      internal static let textWhite1 = ColorAsset(name: "Shimmer/textWhite1")
+    }
     internal enum TabBar {
       internal static let separator = ColorAsset(name: "TabBar/separator")
     }

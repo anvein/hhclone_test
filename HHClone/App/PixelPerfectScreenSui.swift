@@ -1,6 +1,7 @@
 import SwiftUI
 import UIKit
 
+#if DEBUG
 struct PixelPerfectScreenSui: View {
 
     private var defaults: DefaultsWrapper
@@ -665,3 +666,4 @@ fileprivate extension ContentMode {
 //    }
 //}
 
+#endif

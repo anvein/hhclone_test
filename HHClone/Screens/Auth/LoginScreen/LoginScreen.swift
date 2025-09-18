@@ -5,6 +5,7 @@ struct LoginScreen: View {
     static let screenId: String = String(describing: Self.self)
 
     @State private var userEmailOrPhone: String = ""
+    @State private var isShowDevTools: Bool = false
 
     @Binding var path: [AuthRoute]
 
@@ -14,16 +15,12 @@ struct LoginScreen: View {
                 .ignoresSafeArea()
 
             VStack {
-                Text(L10n.LoginScreen.title)
-                    .font(AppFont.SFProDisplay.semibold.suiFont(size: 20))
-                    .foregroundStyle(AppColor.Text.main.suiColor)
-                    .frame(maxWidth: .infinity, alignment: .topLeading)
-                    .padding(.top, 18)
-                    .padding(.leading, 3)
+                TitleLabel {
+                    isShowDevTools = true
+                }
 
                 Spacer()
                     .frame(maxHeight: 118)
-
                 
                 FindWorkLoginView { emailOrPhone in
                     // провалидировать
@@ -39,11 +36,10 @@ struct LoginScreen: View {
             }
             .padding(.horizontal, 16)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-//            Image("PIXEL_PERFECT_login")
-//                .resizable()
-//                .frame(alignment: .top)
-//                .ignoresSafeArea(edges: .top)
+        }
+        .sheet(isPresented: $isShowDevTools) {
+            DevToolsSheet()
+                .presentationDragIndicator(.visible)
         }
 
     }
@@ -71,6 +67,24 @@ struct LoginScreen: View {
                 // отправить код на телефон
             }
         }
+    }
+}
+
+// MARK: - Subviews
+
+fileprivate struct TitleLabel: View {
+    var onLongPress: () -> Void
+
+    var body: some View {
+        Text(L10n.LoginScreen.title)
+            .font(AppFont.SFProDisplay.semibold.suiFont(size: 20))
+            .foregroundStyle(AppColor.Text.main.suiColor)
+            .frame(maxWidth: .infinity, alignment: .topLeading)
+            .padding(.top, 18)
+            .padding(.leading, 3)
+            .onLongPressGesture(minimumDuration: 0.1, maximumDistance: 10) {
+                onLongPress()
+            }
     }
 }
 

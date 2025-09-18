@@ -146,5 +146,3 @@ struct LoginCodeScreen_Previews: PreviewProvider {
         Container()
     }
 }
-
-

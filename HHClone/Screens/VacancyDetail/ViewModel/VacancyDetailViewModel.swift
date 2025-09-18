@@ -3,7 +3,8 @@ import Foundation
 
 final class VacancyDetailViewModel: ObservableObject {
 
-    private var vacancy: Vacancy
+    private var vacancyId: UUID
+    private var vacancyModel: Vacancy?
 
     @Published private(set) var viewData: VacancyDetailViewData?
 
@@ -14,18 +15,29 @@ final class VacancyDetailViewModel: ObservableObject {
     // MARK: - Init
 
     init(vacancyId: UUID) {
-//        loadVacancy(by: vacancyId)
-        self.vacancy = Vacancy.testVacancy
-        self.viewData = self.makeViewData(from: Vacancy.testVacancy)
-    }
-
-    // Инициализатор с готовой моделью
-    init(vacancy: Vacancy) {
-        self.vacancy = vacancy
-        self.viewData = self.makeViewData(from: vacancy)
+        self.vacancyId = vacancyId
     }
 
     // MARK: -
+
+    func loadVacancy() {
+        Task.detached(priority: .userInitiated) { [weak self] in
+            guard let self else { return }
+
+            self.vacancyModel = await self.fetchVacancy(by: self.vacancyId)
+            guard let vacancyModel = self.vacancyModel else { return }
+
+            Task { @MainActor in
+                self.viewData = self.makeViewData(from: vacancyModel)
+            }
+        }
+    }
+
+    func fetchVacancy(by vacancyId: UUID) async -> Vacancy? {
+        return Vacancy.mockList.first { vacancy in
+            vacancy.id == vacancyId
+        }
+    }
 
     func resetResponseSheetIfNeeded() {
         if isShowResponseSheet == false {

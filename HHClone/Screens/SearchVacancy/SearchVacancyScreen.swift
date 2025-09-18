@@ -6,37 +6,37 @@ struct SearchVacancyScreen: View {
 
     @Binding private var path: [SearchTabRoute]
 
-    @State private var vacancies: [Vacancy] = Vacancy.mockList
+    @StateObject private var viewModel: SearchVacancyViewModel
 
-    private var sortTypes: [VacanciesListSortType] = VacanciesListSortType.allCases
-    @State private var selectedSortType: VacanciesListSortType? = .allCases.first
+    @State private var reachedBottom = false
 
     var body: some View {
         ZStack {
             Color(uiColor: AppColor.bgMain.color)
 
             ScrollView {
-
-                SearchVacancyActionsRowView(onTap: { action in
+                HorizontalActionsView(items: SearchVacancyScreenAction.allCases) { action in
                     handleTapAction(action)
-                })
+                }
                 .padding(.vertical, 20)
 
                 LazyVStack(alignment: .leading, spacing: 0) {
                     VacancyListHeaderView(
-                        vacanciesCount: 153,
-                        sortTypes: sortTypes,
-                        selectedSortType: $selectedSortType
+                        vacanciesCount: $viewModel.vacancies.count,
+                        sortTypes: viewModel.sortTypes,
+                        isLoading: viewModel.isLoading,
+                        selectedSortType: $viewModel.selectedSortType
                     )
 
                     VacancyListView(
-                        vacancies: $vacancies
+                        vacancies: $viewModel.vacancies,
+                        isLoading: viewModel.isLoading
                     ) { vacancy in
                         handleTapAddToFavourite(vacancy)
                     } onTapRespond: { vacancy in
                         handleTapApplyTo(vacancy)
                     } onTapVacancy: { vacancy in
-                        path.append(.vacancyDetail(vacancy))
+                        path.append(.vacancyDetail(vacancyId: vacancy.id))
                     }
                 }
                 .padding(.horizontal, 16)
@@ -44,16 +44,29 @@ struct SearchVacancyScreen: View {
             }
             .scrollContentBackground(.hidden)
             .padding(.init(top: 1, leading: 0, bottom: 1, trailing: 0))
-            .onAppear(perform: {
-                selectedSortType = sortTypes.first
+            .refreshable {
+                viewModel.reloadVacancies()
+            }
+            .onAppear() {
+                if viewModel.vacancies.isEmpty {
+                    viewModel.reloadVacancies()
+                }
+            }
+            .onChange(of: viewModel.selectedSortType) { _, newValue in
+                viewModel.reloadVacancies()
+            }
+            .onPreferenceChange(ShowBottomItemPreferenceKey.self, perform: { isShowBottom in
+                guard isShowBottom else { return }
+                viewModel.loadNextPageVacanciesIfNeeded()
             })
         }
     }
 
-    // MARK: - Init
-
-    init(path: Binding<[SearchTabRoute]>) {
+    init(path: Binding<[SearchTabRoute]>, vacancyService: VacancyService) {
         self._path = path
+        self._viewModel = .init(
+            wrappedValue: .init(vacancyService: vacancyService)
+        )
     }
 
     // MARK: - Action Handlers
@@ -62,21 +75,11 @@ struct SearchVacancyScreen: View {
         print("on tap action: \(action.rawValue)")
     }
 
-    private func handleTapAddToFavourite(_ vacancy: Vacancy) {
-        print("on tap Add To Favourite Vacancy \(vacancy.title)")
-
-        guard let vacancyIndex = vacancies.firstIndex(where: { $0.id == vacancy.id }) else {
-            return
-        }
-
-        DispatchQueue.main.async {
-            withAnimation(nil) {
-                vacancies[vacancyIndex].isFavourite.toggle()
-            }
-        }
+    private func handleTapAddToFavourite(_ vacancy: VacancyRowViewModel) {
+        viewModel.toggleIsFavourite(of: vacancy)
     }
 
-    private func handleTapApplyTo(_ vacancy: Vacancy) {
+    private func handleTapApplyTo(_ vacancy: VacancyRowViewModel) {
         print("on tap Apply To Vacancy \(vacancy.title)")
     }
 }
@@ -85,15 +88,17 @@ struct SearchVacancyScreen: View {
 
 fileprivate struct VacancyListHeaderView: View {
     let vacanciesCount: Int
-    let sortTypes: [VacanciesListSortType]
-    @Binding var selectedSortType: VacanciesListSortType?
+    let sortTypes: [VacancyListSortType]
+    let isLoading: Bool
+    @Binding var selectedSortType: VacancyListSortType
 
     var body: some View {
         ListSectionTitleRow("Вакансии для вас")
             .padding(.bottom, 8)
 
         ListSortWithMenuRow<String>(
-            "\(vacanciesCount) вакансий",
+            "\(vacanciesCount) вакансий", // TODO: сделать со числительными
+            isLoading: isLoading,
             values: sortTypes.map {
                 .init(
                     key: $0.rawValue,
@@ -103,68 +108,50 @@ fileprivate struct VacancyListHeaderView: View {
             },
             selectedValue: Binding(
                 get: {
-                    selectedSortType?.rawValue
+                    selectedSortType.rawValue
                 }, set: { newValue in
-                    if let newValue {
-                        selectedSortType = sortTypes.first(where: { item in
-                            item.rawValue == newValue
-                        })
-                    } else {
-                        selectedSortType = nil
+                    guard let newValue,
+                          let sortType = sortTypes.first(where: { $0.rawValue == newValue }) else {
+                        return
                     }
+
+                    selectedSortType = sortType
                 }
             )
         )
-        .padding(.vertical, 10)
+        .padding(.vertical, 2)
     }
 }
 
-fileprivate struct VacancyListView: View {
-    @Binding var vacancies: [Vacancy]
-    @State private var pressedVacancyId: UUID? = nil
+// MARK: -
 
-    var onTapAddToFavourite: (Vacancy) -> Void
-    var onTapRespond: (Vacancy) -> Void
-    var onTapVacancy: (Vacancy) -> Void
-
-    var body: some View {
-        ForEach($vacancies) { $vacancy in
-            VacancyListRowView(vacancy: $vacancy) {
-                // TODO: возможно захватывать id а не всю структуру
-                onTapAddToFavourite(vacancy)
-            } onTapApplyToVacancy: {
-                onTapRespond(vacancy)
-            }
-            .padding(.bottom, 8)
-            .scaleEffect(pressedVacancyId == vacancy.id ? 0.96 : 1.0)
-            .animation(.easeInOut(duration: 0.1), value: pressedVacancyId)
-            .contentShape(Rectangle())
-            .onTapGesture {
-                // TODO: возможно захватывать id а не всю структуру
-                onTapVacancy(vacancy)
-            }
-            .simultaneousGesture(
-                DragGesture(minimumDistance: 3)
-                    .onChanged { _ in
-                        pressedVacancyId = nil
-                    }
-            )
-            .onLongPressGesture(
-                minimumDuration: 0,
-                maximumDistance: 3,
-                pressing: { isPressing in
-                    pressedVacancyId = isPressing ? vacancy.id : nil
-                },
-                perform: {}
-            )
-        }
+struct BottomPreferenceKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
     }
+}
 
+struct ShowBottomItemPreferenceKey: PreferenceKey {
+    static var defaultValue: Bool = false
+    static func reduce(value: inout Bool, nextValue: () -> Bool) {
+        value = nextValue()
+    }
 }
 
 // MARK: - Preview
 
-#Preview {
-    MainTabView()
-        .previewLayout(.fixed(width: 300, height: 600))
+struct SearchVacancyScreen_Previews: PreviewProvider {
+    struct Container: View {
+        @StateObject private var diContainer = AppDIContainer()
+
+        var body: some View {
+            MainTabView()
+                .environmentObject(diContainer)
+        }
+    }
+
+    static var previews: some View {
+        Container()
+    }
 }

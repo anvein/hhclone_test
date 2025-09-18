@@ -45,6 +45,7 @@ internal enum AssetImages {
     internal static let pixelperfectResponseSheet = ImageAsset(name: "PIXEL_PERFECT_response_sheet")
     internal static let pixelperfectResponseSheetSmall = ImageAsset(name: "PIXEL_PERFECT_response_sheet_small")
     internal static let pixelperfectVacancyDetail = ImageAsset(name: "PIXEL_PERFECT_vacancy_detail")
+    internal static let pixelperfectVacancyRow = ImageAsset(name: "PIXEL_PERFECT_vacancy_row")
     internal static let aaa = ImageAsset(name: "aaa")
   }
 }
