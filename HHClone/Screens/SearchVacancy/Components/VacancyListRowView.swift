@@ -2,9 +2,11 @@ import SwiftUI
 
 struct VacancyListRowView: View {
 
-    @Binding private var vacancy: VacancyRowViewModel
-    private var onTapAddToFavourite: (() -> Void)?
-    private var onTapApplyToVacancy: (() -> Void)?
+    @State private var favoriteIsPressing: Bool = false
+    @ObservedObject var vacancy: VacancyRowViewModel
+
+    var onTapAddToFavourite: (() -> Void)? = nil
+    var onTapApplyToVacancy: (() -> Void)? = nil
 
     var body: some View {
         VStack {
@@ -17,7 +19,6 @@ struct VacancyListRowView: View {
 
                         Text(vacancy.title)
                             .font(TextStyle.title16)
-                            .fixedSize(horizontal: false, vertical: true)
 
                         if let salaryText = vacancy.salaryRangeText {
                             Text("\(salaryText)")
@@ -90,27 +91,31 @@ struct VacancyListRowView: View {
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .contentShape(RoundedRectangle(cornerRadius: 8))
     }
-
-    init(
-        vacancy: Binding<VacancyRowViewModel>,
-        onTapAddToFavourite: (() -> Void)? = nil,
-        onTapApplyToVacancy: (() -> Void)? = nil
-    ) {
-        self._vacancy = vacancy
-        self.onTapAddToFavourite = onTapAddToFavourite
-        self.onTapApplyToVacancy = onTapApplyToVacancy
-    }
-
 }
 
 // MARK: - Preview
+
+struct SearchVacancyScreenForRow_Previews: PreviewProvider {
+    struct Container: View {
+        @StateObject private var diContainer = AppDIContainer()
+
+        var body: some View {
+            MainTabView()
+                .environmentObject(diContainer)
+        }
+    }
+
+    static var previews: some View {
+        Container()
+    }
+}
 
 struct VacancyRowView_Previews: PreviewProvider {
     struct Container: View {
         @State var vacancy: VacancyRowViewModel = .init(vacancy: .testVacancy)
 
         var body: some View {
-            VacancyListRowView(vacancy: $vacancy)
+            VacancyListRowView(vacancy: vacancy)
         }
     }
 

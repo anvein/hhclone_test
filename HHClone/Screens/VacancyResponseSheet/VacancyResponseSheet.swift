@@ -1,55 +1,32 @@
 import SwiftUI
 
-// MARK: - View Model
-
-final class VacancyResponseViewModel: ObservableObject {
-//    @Published var vacancyTitle: String
-//
-//    init(vacancy: Vacancy) {
-//        fillData(from: vacancy)
-//    }
-//
-//    // MARK: -
-//
-//    private func fillData(from vacancy: Vacancy) {
-//        vacancyTitle = vacancy.title
-//    }
-}
-
-
-
 // MARK: - Main view
 
 struct VacancyResponseSheet: View {
 
     static let defaultHeight: CGFloat = 200
 
-//    @StateObject private var viewModel: VacancyResponseViewModel
-
-    @State private var isAddingCoverLetter: Bool = false
-    @State private var coverLetterText: String = ""
-
+    @ObservedObject private var viewModel: VacancyResponseViewModel
     @Binding var contentHeight: CGFloat
 
-    init(
-        coverLetterText: String = "",
-        contentHeight: Binding<CGFloat>
-    ) {
-        self._coverLetterText = State(initialValue: coverLetterText)
+    @Environment(\.dismiss) var dismiss
+
+    init(viewModel: VacancyResponseViewModel, contentHeight: Binding<CGFloat>) {
+        self.viewModel = viewModel
         self._contentHeight = contentHeight
     }
 
     var body: some View {
         VStack {
-            ResponseHeaderView()
+            ResponseHeaderView(title: viewModel.vacancyTitle)
 
             ResponseCoverLetterView(
-                isAddingCoverLetter: $isAddingCoverLetter,
-                coverLetterText: $coverLetterText
+                isAddingCoverLetter: $viewModel.isAddingCoverLetter,
+                coverLetterText: $viewModel.coverLetterText
             )
 
-            ResponseButtonView {
-                print("Отправить отклик на вакансию \(Int.random(in: 0...10))")
+            ResponseButtonView(isLoading: viewModel.isLoading) {
+                viewModel.sendResponse()
             }
         }
         .frame(maxWidth: .infinity, alignment: .top)
@@ -58,14 +35,23 @@ struct VacancyResponseSheet: View {
         .presentationDragIndicator(.visible)
         .presentationCornerRadius(8)
         .presentationBackground(.bgMain)
+        .interactiveDismissDisabled(viewModel.isLoading)
+        .disabled(viewModel.isLoading)
         .getContentSize(height: $contentHeight)
+        .onReceive(viewModel.$shouldClose) { isShouldClose in
+            guard isShouldClose else { return }
+            dismiss()
+        }
     }
 
 }
 
-// MARK: - Components
+// MARK: - Subviews
 
 fileprivate struct ResponseHeaderView: View {
+
+    let title: String
+
     var body: some View {
         HStack(spacing: 16) {
             Image(.Icons.userAvatarGirlDummy)
@@ -76,9 +62,11 @@ fileprivate struct ResponseHeaderView: View {
                     .font(TextStyle.text14)
                     .foregroundStyle(Color.grey3)
 
-                Text("UI/UX дизайнер")
+                Text(title)
                     .font(TextStyle.title16)
                     .foregroundStyle(Color.Text.main)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -174,17 +162,25 @@ fileprivate struct CoverLetterTextEditor: View {
 }
 
 fileprivate struct ResponseButtonView: View {
+    var isLoading: Bool
     var onTapButton: (() -> Void)?
 
     var body: some View {
-        Button("Откликнуться") {
+        Button {
             onTapButton?()
+        } label: {
+            if isLoading {
+                ProgressView()
+            } else {
+                Text("Откликнуться")
+            }
         }
         .buttonStyle(FillRectangleButtonStyle(
             bgColor: .Button.green
         ))
         .frame(maxWidth: .infinity)
         .padding(.bottom, 22)
+        .disabled(isLoading)
     }
 }
 
@@ -202,8 +198,14 @@ struct VacancyResponseSheet_Preview: PreviewProvider {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .sheet(isPresented: $isShowSheet) {
-                VacancyResponseSheet(contentHeight: $responseSheetHeight)
-                    .presentationDetents([.height(responseSheetHeight)])
+                VacancyResponseSheet(
+                    viewModel: .init(
+                        vacancyId: Vacancy.testVacancy.id,
+                        title: Vacancy.testVacancy.title
+                    ),
+                    contentHeight: $responseSheetHeight
+                )
+                .presentationDetents([.height(responseSheetHeight)])
             }
         }
     }

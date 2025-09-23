@@ -9,17 +9,34 @@ final class VacancyService {
         self.mapper = mapper
     }
 
-    func fetchVacancies(pagination: Pagination, sortType: VacancyListSortType) async -> [Vacancy] {
+    func fetchVacancies(
+        pagination: Pagination,
+        sortType: VacancyListSortType
+    ) async throws -> VacancyList {
         do {
-            let apiResult: VacancyListResponseDto = try await apiDataManager.fetchVacancyList(
+            let apiResult: VacancyListResponseDto = try await apiDataManager.getVacancyList(
                 pagination: pagination.toApiDto(),
                 sortType: sortType.toApiDto()
             )
 
-            return mapper.map(from: apiResult.items)
+            return mapper.map(from: apiResult)
         } catch let error {
-            print(error) // логировать
-            return []
+            print(error)  // TODO: логировать
+            throw AppError.custom(message: error.localizedDescription)
+        }
+    }
+
+    func updateVacancy(isFavorite: Bool, with id: UUID) async throws -> Vacancy {
+        do {
+            let apiResult: VacancyItemResponseDto = try await apiDataManager.patchVacancyIsFavorite(
+                isFavorite,
+                id: id
+            )
+
+            return mapper.map(from: apiResult)
+        } catch let error {
+            print(error)  // TODO: логировать
+            throw AppError.custom(message: error.localizedDescription)
         }
     }
 }

@@ -5,10 +5,6 @@ import SwiftUI
 struct VacancyDetailScreen: View {
     @ObservedObject var viewModel: VacancyDetailViewModel
 
-    init(viewModel: VacancyDetailViewModel) {
-        _viewModel = ObservedObject(wrappedValue: viewModel)
-    }
-
     var body: some View {
         ZStack {
             ContentContainerView {
@@ -32,13 +28,12 @@ struct VacancyDetailScreen: View {
                 DescriptionView(viewModel.viewData?.descriptionMarkdownContent ?? "")
 
                 RespondWithQuestionView { selectedQuestion in
-                    viewModel.responseCoverLetter = selectedQuestion.messageText
-                    viewModel.isShowResponseSheet = true
+                    viewModel.showResponseSheet(coverLetterText: selectedQuestion.messageText)
                 }
             }
 
             RespondButtonView {
-                viewModel.isShowResponseSheet = true
+                viewModel.showResponseSheet()
             }
 
 #if DEBUG
@@ -47,22 +42,13 @@ struct VacancyDetailScreen: View {
 #endif
         }
         .background(.bgMain)
-        .sheet(isPresented: Binding(
-            get: { viewModel.isShowResponseSheet },
-            set: { viewModel.isShowResponseSheet = $0 }
-        )) {
+        .sheet(item: $viewModel.responseSheetViewModel, content: { sheetVM in
             VacancyResponseSheet(
-                coverLetterText: viewModel.responseCoverLetter ?? "",
-                contentHeight: Binding(
-                    get: { viewModel.responseSheetHeight },
-                    set: { viewModel.responseSheetHeight = $0 }
-                )
+                viewModel: sheetVM,
+                contentHeight: $viewModel.responseSheetHeight
             )
             .presentationDetents([.height(viewModel.responseSheetHeight)])
-        }
-        .onChange(of: viewModel.isShowResponseSheet) {
-            viewModel.resetResponseSheetIfNeeded()
-        }
+        })
         .onAppear {
             viewModel.loadVacancy()
         }

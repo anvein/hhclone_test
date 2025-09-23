@@ -5,15 +5,15 @@ struct VacancyListView: View {
     @State private var pressedVacancyId: UUID? = nil
     var isLoading: Bool
 
-    var onTapAddToFavourite: (VacancyRowViewModel) -> Void
+    var onTapAddToFavourite: (UUID) -> Void
     var onTapRespond: (VacancyRowViewModel) -> Void
     var onTapVacancy: (VacancyRowViewModel) -> Void
 
     var body: some View {
-        ForEach($vacancies) { $vacancy in
-            VacancyListRowView(vacancy: $vacancy) {
+        ForEach(vacancies) { vacancy in
+            VacancyListRowView(vacancy: vacancy) {
                 // TODO: возможно захватывать id а не всю структуру
-                onTapAddToFavourite(vacancy)
+                onTapAddToFavourite(vacancy.id)
             } onTapApplyToVacancy: {
                 onTapRespond(vacancy)
             }
@@ -42,7 +42,7 @@ struct VacancyListView: View {
         }
 
         if isLoading {
-            ShimmerList(itemsCount: 5)
+            ShimmerList(itemsCount: vacancies.isEmpty ? 5 : 1)
         } else {
             Color.clear
                 .frame(height: 1)

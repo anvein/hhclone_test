@@ -2,13 +2,18 @@ import Foundation
 
 final class SearchVacancyViewModel: ObservableObject {
 
-    let vacancyService: VacancyService
+    private let vacancyService: VacancyService
 
-    @Published var vacancies: [VacancyRowViewModel] = []
+    // MARK: - Data
+
     private var vacanciesModels: [Vacancy] = []
+    @Published var vacancies: [VacancyRowViewModel] = []
 
     let sortTypes: [VacancyListSortType] = VacancyListSortType.allCases
     @Published var selectedSortType: VacancyListSortType = .defaultValue
+
+    @Published var responseSheetViewModel: VacancyResponseViewModel? = nil
+    @Published var responseSheetHeight: CGFloat = VacancyResponseSheet.defaultHeight
 
     @Published var isLoading: Bool = false
     var pagination: Pagination = .init()
@@ -35,55 +40,91 @@ final class SearchVacancyViewModel: ObservableObject {
         performLoadVacancies(append: true)
     }
 
+    func showResponseSheet(for vacancyId: UUID) {
+        guard let vacancyModel = getVacancyModel(by: vacancyId) else { return }
+
+        responseSheetHeight = VacancyResponseSheet.defaultHeight
+        responseSheetViewModel = .init(
+            vacancyId: vacancyModel.id,
+            title: vacancyModel.title
+        )
+    }
+
     // MARK: - Working with data
 
     private func performLoadVacancies(append: Bool = false) {
         isLoading = true
 
-        Task.detached(priority: .userInitiated) { [weak self] in
+        Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
 
-            try? await Task.sleep(nanoseconds: 2_000_000_000)
-            let models = await self.vacancyService.fetchVacancies(
-                pagination: pagination,
-                sortType: selectedSortType
-            )
+//            try? await Task.sleep(nanoseconds: 2_000_000_000) // TODO: УДАЛИТЬ, КОД ДЛЯ РАЗРАБОТКИ
 
-            await MainActor.run {
-                defer { self.isLoading = false }
+            do {
+                let result = try await self.vacancyService.fetchVacancies(
+                    pagination: pagination,
+                    sortType: selectedSortType
+                )
 
-                if append {
-                    self.vacanciesModels += models
-                    self.vacancies += models.map({ .init(vacancy: $0) })
-                } else {
-                    self.vacanciesModels = models
-                    self.vacancies = models.map({ .init(vacancy: $0) })
+                await MainActor.run {
+                    defer { self.isLoading = false }
+
+                    self.pagination = result.pagination
+                    if append {
+                        self.vacanciesModels += result.vacancies
+                        self.vacancies += result.vacancies.map({ .init(vacancy: $0) })
+                    } else {
+                        self.vacanciesModels = result.vacancies
+                        self.vacancies = result.vacancies.map({ .init(vacancy: $0) })
+                    }
                 }
+            } catch {
+                await MainActor.run { [weak self] in
+                    guard let self else { return }
+                    self.isLoading = false
 
-                // TODO: сделать чтобы эти данные брались из API
-                if models.isEmpty {
-                    self.pagination.fillTotalPagesFromPage()
+                    // TODO: обработать ошибку - показать
+                    print("Failed to fetch vacancies:", error)
                 }
             }
         }
     }
 
-    func toggleIsFavourite(of vacancy: VacancyRowViewModel) {
-        guard let index = getVacancyModelIndex(by: vacancy.id) else {
-            return
-        }
+    func toggleIsFavourite(with vacancyId: UUID) {
+        guard let modelIndex = getVacancyModelIndex(by: vacancyId),
+              let vacancyModel = vacanciesModels[safe: modelIndex],
+              let vacancyVM = getVacancyViewModel(by: vacancyId),
+              !vacancyVM.isUpdating else { return }
 
-        // TODO: переделать на работу с API
-        // обновление модели в data manager
-        let indexMock = Vacancy.mockList.firstIndex { $0.id == vacancy.id }
-        if let indexMock {
-            Vacancy.mockList[indexMock].isFavourite.toggle()
-        }
+        Task { [weak self] in
+            guard let self else { return }
 
-        vacanciesModels[index].isFavourite.toggle()
+            let newValue = !vacancyModel.isFavourite
 
-        Task { @MainActor in
-            vacancies[index].isFavourite.toggle()
+            do {
+                await MainActor.run {
+                    vacancyVM.isFavourite = newValue
+                    vacancyVM.isUpdating = true
+                }
+
+                let updatedVacancyModel = try await self.vacancyService.updateVacancy(
+                    isFavorite: newValue,
+                    with: vacancyId
+                )
+
+                await MainActor.run { [weak self] in
+                    guard let self else { return }
+
+                    vacancyVM.isUpdating = false
+                    self.vacanciesModels[modelIndex] = updatedVacancyModel
+                    self.updateRowViewModel(from: updatedVacancyModel)
+                }
+            } catch {
+                // TODO: обработать и показать ошибку
+                await MainActor.run {
+                    vacancyVM.isFavourite = !newValue
+                }
+            }
         }
     }
 
@@ -91,6 +132,27 @@ final class SearchVacancyViewModel: ObservableObject {
 
     private func getVacancyModelIndex(by id: UUID) -> Int? {
         vacanciesModels.firstIndex { $0.id == id }
+    }
+
+    private func getVacancyModel(by id: UUID) -> Vacancy? {
+        vacanciesModels.first { $0.id == id }
+    }
+
+    private func getVacancyViewModelIndex(by id: UUID) -> Int? {
+        vacancies.firstIndex { $0.id == id }
+    }
+
+    private func getVacancyViewModel(by id: UUID) -> VacancyRowViewModel? {
+        guard let index = getVacancyViewModelIndex(by: id),
+              let vm = vacancies[safe: index] else { return nil }
+
+        return vm
+    }
+
+    @MainActor
+    private func updateRowViewModel(from model: Vacancy) {
+        guard let vm = getVacancyViewModel(by: model.id)  else { return }
+        vm.update(from: model)
     }
 
     private func resetData() {

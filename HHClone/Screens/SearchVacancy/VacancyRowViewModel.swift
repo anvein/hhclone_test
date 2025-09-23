@@ -1,18 +1,21 @@
 import Foundation
+import SwiftUI
 
-struct VacancyRowViewModel: Identifiable {
+class VacancyRowViewModel: Identifiable, ObservableObject {
     let id: UUID
-    var isFavourite: Bool
-    let title: String
-    let experienceText: String?
-    let salaryRangeText: String?
+    @Published var isFavourite: Bool
+    @Published var title: String
+    @Published var experienceText: String?
+    @Published var salaryRangeText: String?
 
-    let employerTitle: String
-    let employerCity: String
-    let isEmployerVerify: Bool
+    @Published var employerTitle: String
+    @Published var employerCity: String
+    @Published var isEmployerVerify: Bool
 
-    let publishedAtText: String
-    let viewersNowText: String
+    @Published var publishedAtText: String
+    @Published var viewersNowText: String
+
+    @Published var isUpdating: Bool = false
 
     init(vacancy: Vacancy/*, listVM: SearchVacancyViewModel*/) {
         self.id = vacancy.id
@@ -28,6 +31,14 @@ struct VacancyRowViewModel: Identifiable {
         // TODO: 
         self.publishedAtText = "Опубликовано 14 февраля"
         self.viewersNowText = "Сейчас просматривает 1 человек"
+    }
+
+    func update(from vacancy: Vacancy) {
+        isFavourite = vacancy.isFavourite
+        title = vacancy.title
+        experienceText = Self.prepareExperienceText(vacancy.experience)
+
+        // TODO: дописать
     }
 
     // MARK: - Prepare data

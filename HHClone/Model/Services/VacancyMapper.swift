@@ -5,9 +5,19 @@ final class VacancyMapper {
         }
     }
 
+    func map(from apiDto: VacancyListResponseDto) -> VacancyList {
+        return .init(
+            vacancies: apiDto.items.map({
+                self.map(from: $0)
+            }),
+            pagination: .init(page: apiDto.page, totalPages: apiDto.totalPages)
+        )
+    }
+
     func map(from apiDto: VacancyItemResponseDto) -> Vacancy {
         return .init(
             id: apiDto.id,
+            isFavourite: apiDto.isFavorite,
             title: apiDto.title,
             descriptionMarkdownContent: apiDto.description,
             responsibilitiesMarkdownContent: apiDto.responsibilities,

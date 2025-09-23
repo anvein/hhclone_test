@@ -4,7 +4,37 @@ const port = 3000;
 
 app.use(express.json()); // для парсинга JSON
 
-const vacanciesPage1 = [
+// ЛОГИРОВАНИЕ
+
+app.use((req, res, next) => {
+  console.log("----- REQUEST -----");
+  console.log("Method:", req.method);
+  console.log("URL:", req.originalUrl);
+  console.log("Headers:", req.headers);
+  console.log("Query:", req.query);
+  console.log("Params:", req.params);
+  console.log("Body:", req.body);
+  console.log("-------------------");
+  next();
+});
+
+app.use((req, res, next) => {
+  const oldJson = res.json;
+
+  res.json = function (data) {
+    console.log("----- RESPONSE -----");
+    console.log("Status:", res.statusCode);
+    console.log("Body:", data);
+    console.log("--------------------");
+    return oldJson.call(this, data);
+  };
+
+  next();
+});
+
+// ДАННЫЕ
+
+let vacancies = [
     {
         "id": "54a876a5-2205-48ba-9498-cfecff4baa6e",
         "lookingNumber": 17,
@@ -168,11 +198,8 @@ const vacanciesPage1 = [
         ],
         "employmentType": "voluntteing",
         "businessTrip": "ready"
-    }
-];
-
-const vacanciesPage2 = [
-  {
+    },
+    {
         "id": "26f88856-ae74-4b7c-9d85-b68334bb99db",
         "lookingNumber": 29,
         "title": "Ведущий продуктовый дизайнер 2",
@@ -234,37 +261,53 @@ const vacanciesPage2 = [
     }
 ];
 
+// РОУТЫ
 
-app.get('/api/hello', (req, res) => {
-  res.json({ message: "Hello from mock API" });
+app.get("/api/vacancies", (req, res) => {
+  const page = parseInt(req.query.page) || 1; // номер страницы
+  const limit = 5;
+
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+
+  const total = vacancies.length;
+  const totalPages = Math.ceil(total / limit);
+
+  const items = vacancies.slice(startIndex, endIndex);
+
+  console.log();
+  res.json({ items: items, page: page, totalPages: totalPages });
 });
 
-app.get('/api/vacancies', (req, res) => {
-  if (!req.query.page || req.query.page === '1') {
-    console.log("1")
-    res.json({ items: vacanciesPage1, page: 1, totalPages: 2 });
-  } else if (req.query.page === '2') {
-    console.log("2")
-    res.json({ items: vacanciesPage2, page: 2, totalPages: 2 });
-  } else {
-    console.log("3")
-    res.json({ items: [], page: 3, totalPages: 2 });
+// Получить вакансию по id
+app.get("/api/vacancies/:id", (req, res) => {
+  const vacancy = vacancies.find(v => v.id === req.params.id);
+  if (!vacancy) {
+    return res.status(404).json({ error: `Vacancy ${req.params.id} not found` });
   }
+  res.json({ vacancy: vacancy });
 });
 
 
-
-app.post('/api/data', (req, res) => {
-  const body = req.body;
-
-
-
-  if (body.type === 'A') {
-    res.json({ response: "Type A received" });
-  } else {
-    res.json({ response: "Other type received" });
+// Обновить isFavorite
+app.patch("/api/vacancies/:id/favorite", (req, res) => {
+  const vacancy = vacancies.find(v => v.id === req.params.id);
+  if (!vacancy) {
+    return res.status(404).json({ error: `Vacancy ${req.params.id} not found` });
   }
+
+  console.log(vacancy)
+
+  if (typeof req.body.isFavorite !== "boolean") {
+    return res.status(400).json({ error: "isFavorite must be boolean" });
+  }
+
+  vacancy.isFavorite = req.body.isFavorite;
+  res.json(vacancy);
 });
+
+
+// ЗАПУСК СЕРВЕРА
 
 app.listen(port, () => {
   console.log(`Mock API running at http://localhost:${port}`);

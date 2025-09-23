@@ -17,10 +17,6 @@ struct Pagination {
         page = 1
         totalPages = nil
     }
-
-    mutating func fillTotalPagesFromPage() {
-        totalPages = page
-    }
 }
 
 extension Pagination {
@@ -28,3 +24,6 @@ extension Pagination {
         .init(page: page)
     }
 }
+
+
+

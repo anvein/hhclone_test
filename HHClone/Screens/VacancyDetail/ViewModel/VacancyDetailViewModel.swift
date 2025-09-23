@@ -3,18 +3,19 @@ import Foundation
 
 final class VacancyDetailViewModel: ObservableObject {
 
-    private var vacancyId: UUID
+    private(set) var vacancyId: UUID
     private var vacancyModel: Vacancy?
 
     @Published private(set) var viewData: VacancyDetailViewData?
 
-    @Published var isShowResponseSheet: Bool = false
-    @Published var responseCoverLetter: String?
     @Published var responseSheetHeight: CGFloat = VacancyResponseSheet.defaultHeight
+    @Published var responseSheetViewModel: VacancyResponseViewModel? = nil
 
     // MARK: - Init
 
     init(vacancyId: UUID) {
+
+        print("VacancyDetailViewModel INIT")
         self.vacancyId = vacancyId
     }
 
@@ -39,11 +40,15 @@ final class VacancyDetailViewModel: ObservableObject {
         }
     }
 
-    func resetResponseSheetIfNeeded() {
-        if isShowResponseSheet == false {
-            responseCoverLetter = nil
-            responseSheetHeight = VacancyResponseSheet.defaultHeight
-        }
+    func showResponseSheet(coverLetterText: String? = nil) {
+        guard let vacancyModel else { return }
+
+        responseSheetHeight = VacancyResponseSheet.defaultHeight
+        responseSheetViewModel = .init(
+            vacancyId: vacancyModel.id,
+            title: vacancyModel.title,
+            coverLetterText: coverLetterText
+        )
     }
 
     // MARK: -
@@ -109,4 +114,5 @@ final class VacancyDetailViewModel: ObservableObject {
 
         return attributes.joined(separator: ", ").capitalizingFirstLetter()
     }
+
 }

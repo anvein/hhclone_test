@@ -8,8 +8,6 @@ struct SearchVacancyScreen: View {
 
     @StateObject private var viewModel: SearchVacancyViewModel
 
-    @State private var reachedBottom = false
-
     var body: some View {
         ZStack {
             Color(uiColor: AppColor.bgMain.color)
@@ -31,8 +29,8 @@ struct SearchVacancyScreen: View {
                     VacancyListView(
                         vacancies: $viewModel.vacancies,
                         isLoading: viewModel.isLoading
-                    ) { vacancy in
-                        handleTapAddToFavourite(vacancy)
+                    ) { vacancyId in
+                        handleTapAddToFavourite(with: vacancyId)
                     } onTapRespond: { vacancy in
                         handleTapApplyTo(vacancy)
                     } onTapVacancy: { vacancy in
@@ -60,6 +58,13 @@ struct SearchVacancyScreen: View {
                 viewModel.loadNextPageVacanciesIfNeeded()
             })
         }
+        .sheet(item: $viewModel.responseSheetViewModel, content: { sheetVM in
+            VacancyResponseSheet(
+                viewModel: sheetVM,
+                contentHeight: $viewModel.responseSheetHeight
+            )
+            .presentationDetents([.height(viewModel.responseSheetHeight)])
+        })
     }
 
     init(path: Binding<[SearchTabRoute]>, vacancyService: VacancyService) {
@@ -75,12 +80,12 @@ struct SearchVacancyScreen: View {
         print("on tap action: \(action.rawValue)")
     }
 
-    private func handleTapAddToFavourite(_ vacancy: VacancyRowViewModel) {
-        viewModel.toggleIsFavourite(of: vacancy)
+    private func handleTapAddToFavourite(with id: UUID) {
+        viewModel.toggleIsFavourite(with: id)
     }
 
     private func handleTapApplyTo(_ vacancy: VacancyRowViewModel) {
-        print("on tap Apply To Vacancy \(vacancy.title)")
+        viewModel.showResponseSheet(for: vacancy.id)
     }
 }
 
@@ -97,7 +102,7 @@ fileprivate struct VacancyListHeaderView: View {
             .padding(.bottom, 8)
 
         ListSortWithMenuRow<String>(
-            "\(vacanciesCount) вакансий", // TODO: сделать со числительными
+            "\(vacanciesCount) вакансий", // TODO: сделать поддержку числительных
             isLoading: isLoading,
             values: sortTypes.map {
                 .init(
