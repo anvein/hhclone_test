@@ -47,13 +47,20 @@ struct VacancyDetailScreen: View {
 #endif
         }
         .background(.bgMain)
-        .sheet(item: $viewModel.responseSheetViewModel, content: { sheetVM in
-            VacancyResponseSheet(
-                viewModel: sheetVM,
-                contentHeight: $viewModel.responseSheetHeight
-            )
-            .presentationDetents([.height(viewModel.responseSheetHeight)])
-        })
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationBarFavouriteButton(
+                    isFavourite: viewModel.viewData?.isFavourite ?? false,
+                    isLoading: viewModel.isLoading
+                ) {
+                    viewModel.toggleIsFavourite()
+                }
+            }
+        }
+        .vacancyResponseSheet(
+            viewModel: $viewModel.responseSheetViewModel,
+            height: $viewModel.responseSheetHeight
+        )
         .onAppear {
             viewModel.loadVacancy()
         }
@@ -245,6 +252,31 @@ fileprivate struct RespondButtonView: View {
             }
             .background(.bgMain)
         }
+    }
+}
+
+fileprivate struct NavigationBarFavouriteButton: View {
+    let isFavourite: Bool
+    let isLoading: Bool
+    let onTapFavourite: () -> Void
+
+    var body: some View {
+        let size: CGFloat = 26
+        Button {
+            onTapFavourite()
+        } label: {
+            Image(
+                uiImage: isFavourite
+                ? AppImage.Icons.heartFill.image
+                : AppImage.Icons.heart.image
+            )
+            .resizable()
+            .tint(AppColor.grey4.suiColor)
+            .frame(width: size, height: size)
+            .id(isFavourite)
+        }
+        .skeleton(isLoading: isLoading, width: size, height: size)
+        .shimmeringWhiteSoft(active: isLoading)
     }
 }
 

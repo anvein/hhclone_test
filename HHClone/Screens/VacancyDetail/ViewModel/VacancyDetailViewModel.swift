@@ -5,6 +5,9 @@ final class VacancyDetailViewModel: ObservableObject {
 
     private var vacancyService: VacancyService
 
+    typealias OnVacancyUpdate = ((Vacancy) -> Void)
+    private var onUpdate: OnVacancyUpdate?
+
     // MARK: - Data
 
     private(set) var vacancyId: UUID
@@ -16,20 +19,21 @@ final class VacancyDetailViewModel: ObservableObject {
     @Published var responseSheetViewModel: VacancyResponseViewModel? = nil
 
     @Published var isLoading: Bool = false
+    @Published var isUpdating: Bool = false
 
     // MARK: - Init
 
-    init(vacancyService: VacancyService, vacancyId: UUID) {
-        print("VacancyDetailViewModel INIT")
+    init(vacancyService: VacancyService, vacancyId: UUID, onUpdate: OnVacancyUpdate? = nil) {
         self.vacancyService = vacancyService
         self.vacancyId = vacancyId
+        self.onUpdate = onUpdate
     }
 
-    // MARK: -
+    // MARK: - UI Interactions
 
     @MainActor
-    func loadVacancy() {
-        guard !isLoading else { return }
+    func loadVacancy(force: Bool = false) {
+        guard !isLoading && (viewData == nil || force) else { return }
         isLoading = true
 
         Task { [weak self] in
@@ -39,7 +43,7 @@ final class VacancyDetailViewModel: ObservableObject {
             do {
                 result = try await Task.detached(priority: .background) {
                     // TODO: УДАЛИТЬ, КОД ДЛЯ РАЗРАБОТКИ
-                    try? await Task.sleep(nanoseconds: 2_000_000_000)
+                    try? await Task.sleep(nanoseconds: 1_000_000_000)
                     return try await self.vacancyService.fetchVacancy(with: self.vacancyId)
                 }.value
             } catch {
@@ -57,12 +61,39 @@ final class VacancyDetailViewModel: ObservableObject {
         }
     }
 
-    func fetchVacancy(by vacancyId: UUID) async -> Vacancy? {
-        return Vacancy.mockList.first { vacancy in
-            vacancy.id == vacancyId
+    @MainActor
+    func toggleIsFavourite() {
+        guard let vacancyModel, !isUpdating else { return }
+
+        let newValue = !vacancyModel.isFavourite
+
+        Task { [weak self] in
+            guard let self else { return }
+
+            do {
+                self.viewData?.isFavourite = newValue
+                self.isUpdating = true
+
+                let updatedVacancyModel = try await self.vacancyService.updateVacancy(
+                    isFavorite: newValue,
+                    with: self.vacancyId
+                )
+
+                self.vacancyModel = updatedVacancyModel
+                self.viewData = makeViewData(from: updatedVacancyModel)
+
+                self.onUpdate?(updatedVacancyModel)
+            } catch let error {
+                // TODO: обработать и показать ошибку
+                print(error.localizedDescription)
+                self.viewData?.isFavourite = !newValue
+            }
+            self.isUpdating = false
+
         }
     }
 
+    @MainActor
     func showResponseSheet(coverLetterText: String? = nil) {
         guard let vacancyModel else { return }
 
@@ -74,7 +105,7 @@ final class VacancyDetailViewModel: ObservableObject {
         )
     }
 
-    // MARK: -
+    // MARK: - Data Prepare / Format
 
     private func makeViewData(from vacancy: Vacancy) -> VacancyDetailViewData {
         .init(
@@ -95,8 +126,6 @@ final class VacancyDetailViewModel: ObservableObject {
         )
     }
 
-    // MARK: - Data Format
-
     private func formatAddress(_ address: Address) -> String {
         // TODO: вынести в форматтер
         "\(address.city), ул. \(address.street), \(address.number)"
@@ -116,7 +145,6 @@ final class VacancyDetailViewModel: ObservableObject {
             return nil
         }
     }
-
 
     private func formatAttributes(_ vacancy: Vacancy) -> String {
         var attributes: [String] = []

@@ -1,12 +1,14 @@
 import SwiftUI
 
 struct MainTabView: View {
+    @EnvironmentObject private var di: AppDIContainer
+
     @State private var selectedTab = 0
     @AppStorage(DefaultsKeys.isLoggedIn.rawValue) private var isLoggedIn: Bool = false
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            SearchTab()
+            SearchTab(di: di)
                 .tabItem {
                     Image(uiImage: AppImage.Icons.search.image)
                     Text("Поиск")

@@ -50,6 +50,15 @@ final class SearchVacancyViewModel: ObservableObject {
         )
     }
 
+    @MainActor
+    func updateVacancyData(_ vacancy: Vacancy) {
+        guard let modelIndex = getVacancyModelIndex(by: vacancy.id),
+              let vmIndex = getVacancyViewModelIndex(by: vacancy.id) else { return }
+
+        vacanciesModels[modelIndex] = vacancy
+        vacancies[vmIndex].update(from: vacancy)
+    }
+
     // MARK: - Working with data
 
     private func performLoadVacancies(append: Bool = false) {
@@ -58,7 +67,7 @@ final class SearchVacancyViewModel: ObservableObject {
         Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
 
-//            try? await Task.sleep(nanoseconds: 2_000_000_000) // TODO: УДАЛИТЬ, КОД ДЛЯ РАЗРАБОТКИ
+            try? await Task.sleep(nanoseconds: 500_000_000) // TODO: УДАЛИТЬ, КОД ДЛЯ РАЗРАБОТКИ
 
             do {
                 let result = try await self.vacancyService.fetchVacancies(

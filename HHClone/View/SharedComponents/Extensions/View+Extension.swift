@@ -19,6 +19,7 @@ extension View {
 
     func shimmeringWhiteSoft(active: Bool, opacity: Double = 0.4) -> some View {
         self.shimmering(
+            active: active,
             gradient: .init(colors: [.clear, .white.opacity(opacity), .clear]),
             bandSize: 2,
             mode: .overlay(blendMode: .softLight)

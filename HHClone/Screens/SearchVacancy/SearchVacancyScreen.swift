@@ -6,7 +6,7 @@ struct SearchVacancyScreen: View {
 
     @Binding private var path: [SearchTabRoute]
 
-    @StateObject private var viewModel: SearchVacancyViewModel
+    @ObservedObject private var viewModel: SearchVacancyViewModel
 
     var body: some View {
         ZStack {
@@ -58,20 +58,18 @@ struct SearchVacancyScreen: View {
                 viewModel.loadNextPageVacanciesIfNeeded()
             })
         }
-        .sheet(item: $viewModel.responseSheetViewModel, content: { sheetVM in
-            VacancyResponseSheet(
-                viewModel: sheetVM,
-                contentHeight: $viewModel.responseSheetHeight
-            )
-            .presentationDetents([.height(viewModel.responseSheetHeight)])
-        })
+        .vacancyResponseSheet(
+            viewModel: $viewModel.responseSheetViewModel,
+            height: $viewModel.responseSheetHeight
+        )
     }
 
-    init(path: Binding<[SearchTabRoute]>, vacancyService: VacancyService) {
+    init(
+        path: Binding<[SearchTabRoute]>,
+        viewModel: SearchVacancyViewModel
+    ) {
         self._path = path
-        self._viewModel = .init(
-            wrappedValue: .init(vacancyService: vacancyService)
-        )
+        self.viewModel = viewModel
     }
 
     // MARK: - Action Handlers

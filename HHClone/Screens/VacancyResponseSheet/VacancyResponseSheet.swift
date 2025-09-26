@@ -184,8 +184,24 @@ fileprivate struct ResponseButtonView: View {
     }
 }
 
-// MARK: - Preview
+// MARK: - View Extension shortcut
 
+extension View {
+    func vacancyResponseSheet(
+        viewModel: Binding<VacancyResponseViewModel?>,
+        height: Binding<CGFloat>
+    ) -> some View {
+        self.sheet(item: viewModel) { sheetVM in
+            VacancyResponseSheet(
+                viewModel: sheetVM,
+                contentHeight: height
+            )
+            .presentationDetents([.height(height.wrappedValue)])
+        }
+    }
+}
+
+// MARK: - Preview
 
 struct VacancyResponseSheet_Preview: PreviewProvider {
 
