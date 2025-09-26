@@ -16,4 +16,12 @@ extension View {
     func frame(size: CGFloat, alignment: Alignment = .center) -> some View {
         self.frame(width: size, height: size, alignment: alignment)
     }
+
+    func shimmeringWhiteSoft(active: Bool, opacity: Double = 0.4) -> some View {
+        self.shimmering(
+            gradient: .init(colors: [.clear, .white.opacity(opacity), .clear]),
+            bandSize: 2,
+            mode: .overlay(blendMode: .softLight)
+        )
+    }
 }

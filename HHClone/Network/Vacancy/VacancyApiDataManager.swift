@@ -4,6 +4,7 @@ final class VacancyApiDataManager {
 
     private let manager: NetworkManager
     private let dateFormatter: DateFormatter
+    private let decoder: JSONDecoder
 
     init(manager: NetworkManager) {
         self.manager = manager
@@ -12,6 +13,19 @@ final class VacancyApiDataManager {
         dateFormatter.dateFormat = "yyyy-MM-dd"
         dateFormatter.locale = Locale(identifier: "en_US_POSIX")
         self.dateFormatter = dateFormatter
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .formatted(dateFormatter)
+        self.decoder = decoder
+    }
+
+    func getVacancy(with id: UUID) async throws -> VacancyItemResponseDto {
+        return try await manager.request(
+            request: .init(
+                route: VacancyRoute.getVacancy(id: id)
+            ),
+            decoder: decoder
+        )
     }
 
     func getVacancyList(

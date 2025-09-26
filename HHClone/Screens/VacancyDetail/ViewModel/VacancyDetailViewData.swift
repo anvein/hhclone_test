@@ -11,7 +11,7 @@ struct VacancyDetailViewData {
     let isEmployerVerify: Bool
     let experience: String?
     let publishedAt: String?
-    let salary: String
+    let salary: String?
     let attributes: String
 
     let responsesCount: Int

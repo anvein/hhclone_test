@@ -285,7 +285,7 @@ app.get("/api/vacancies/:id", (req, res) => {
   if (!vacancy) {
     return res.status(404).json({ error: `Vacancy ${req.params.id} not found` });
   }
-  res.json({ vacancy: vacancy });
+  res.json(vacancy);
 });
 
 

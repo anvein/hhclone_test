@@ -67,8 +67,6 @@ final class SearchVacancyViewModel: ObservableObject {
                 )
 
                 await MainActor.run {
-                    defer { self.isLoading = false }
-
                     self.pagination = result.pagination
                     if append {
                         self.vacanciesModels += result.vacancies
@@ -77,6 +75,8 @@ final class SearchVacancyViewModel: ObservableObject {
                         self.vacanciesModels = result.vacancies
                         self.vacancies = result.vacancies.map({ .init(vacancy: $0) })
                     }
+
+                    self.isLoading = false
                 }
             } catch {
                 await MainActor.run { [weak self] in

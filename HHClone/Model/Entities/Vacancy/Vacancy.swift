@@ -26,7 +26,7 @@ struct Vacancy: Identifiable, Hashable {
 // MARK: - Test data
 
 extension Vacancy {
-    static let mockVacancyUuid = UUID()
+    static let mockVacancyUuid = UUID(uuidString: "54a876a5-2205-48ba-9498-cfecff4baa6e")!
     static let testVacancy: Self = .init(
         id: Self.mockVacancyUuid,
         title: "UI/UX Designer",

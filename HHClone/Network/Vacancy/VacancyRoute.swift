@@ -1,6 +1,7 @@
 import Foundation
 
 enum VacancyRoute: ApiRoute {
+    case getVacancy(id: UUID)
     case getList(searchType: VacancyListSortTypeApiDto)
     case patchIsFavorite(id: UUID)
 
@@ -12,11 +13,15 @@ enum VacancyRoute: ApiRoute {
     }
 
     var path: [String] {
+        let basePathItems = ["api", "vacancies"]
+
         switch self {
+        case .getVacancy(let id):
+            return basePathItems + [id.uuidString.lowercased()]
         case .getList(_):
-            ["api", "vacancies"]
+            return basePathItems
         case .patchIsFavorite(let id):
-            ["api", "vacancies", id.uuidString.lowercased(), "favorite"]
+            return basePathItems + [id.uuidString.lowercased(), "favorite"]
         }
     }
 

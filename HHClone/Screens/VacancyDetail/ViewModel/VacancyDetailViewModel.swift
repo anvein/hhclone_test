@@ -3,6 +3,10 @@ import Foundation
 
 final class VacancyDetailViewModel: ObservableObject {
 
+    private var vacancyService: VacancyService
+
+    // MARK: - Data
+
     private(set) var vacancyId: UUID
     private var vacancyModel: Vacancy?
 
@@ -11,26 +15,45 @@ final class VacancyDetailViewModel: ObservableObject {
     @Published var responseSheetHeight: CGFloat = VacancyResponseSheet.defaultHeight
     @Published var responseSheetViewModel: VacancyResponseViewModel? = nil
 
+    @Published var isLoading: Bool = false
+
     // MARK: - Init
 
-    init(vacancyId: UUID) {
-
+    init(vacancyService: VacancyService, vacancyId: UUID) {
         print("VacancyDetailViewModel INIT")
+        self.vacancyService = vacancyService
         self.vacancyId = vacancyId
     }
 
     // MARK: -
 
+    @MainActor
     func loadVacancy() {
-        Task.detached(priority: .userInitiated) { [weak self] in
+        guard !isLoading else { return }
+        isLoading = true
+
+        Task { [weak self] in
             guard let self else { return }
 
-            self.vacancyModel = await self.fetchVacancy(by: self.vacancyId)
-            guard let vacancyModel = self.vacancyModel else { return }
-
-            Task { @MainActor in
-                self.viewData = self.makeViewData(from: vacancyModel)
+            var result: Vacancy? = nil
+            do {
+                result = try await Task.detached(priority: .background) {
+                    // TODO: УДАЛИТЬ, КОД ДЛЯ РАЗРАБОТКИ
+                    try? await Task.sleep(nanoseconds: 2_000_000_000)
+                    return try await self.vacancyService.fetchVacancy(with: self.vacancyId)
+                }.value
+            } catch {
+                // TODO: обработать ошибку - показать
+                print("Failed to fetch vacancies:", error)
             }
+
+
+            if let result {
+                self.vacancyModel = result
+                self.viewData = self.makeViewData(from: result)
+            }
+
+            self.isLoading = false
         }
     }
 
@@ -79,7 +102,7 @@ final class VacancyDetailViewModel: ObservableObject {
         "\(address.city), ул. \(address.street), \(address.number)"
     }
 
-    private func formatSalaryRange(_ salary: SalaryRange?) -> String {
+    private func formatSalaryRange(_ salary: SalaryRange?) -> String? {
         let from = salary?.from
         let to = salary?.to
 
@@ -90,7 +113,7 @@ final class VacancyDetailViewModel: ObservableObject {
         } else if let to {
             return "до \(to.value) \(to.currency.textSymbol)"
         } else {
-            return "Уровень дохода не указан"
+            return nil
         }
     }
 

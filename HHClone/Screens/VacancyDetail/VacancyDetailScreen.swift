@@ -1,4 +1,5 @@
 import SwiftUI
+import Shimmer
 
 // MARK: - Main View
 
@@ -8,11 +9,12 @@ struct VacancyDetailScreen: View {
     var body: some View {
         ZStack {
             ContentContainerView {
-                HeaderView(viewData: viewModel.viewData)
+                HeaderView(viewData: viewModel.viewData, isLoading: viewModel.isLoading)
 
                 StatisticView(
                     responsesCount: viewModel.viewData?.responsesCount ?? 0,
-                    visitorsNow: viewModel.viewData?.visitorsNow ?? 0
+                    visitorsNow: viewModel.viewData?.visitorsNow ?? 0,
+                    isLoading: viewModel.isLoading
                 )
 
                 if let viewData = viewModel.viewData {
@@ -25,14 +27,17 @@ struct VacancyDetailScreen: View {
                     .padding(.top, 19)
                 }
 
-                DescriptionView(viewModel.viewData?.descriptionMarkdownContent ?? "")
+                DescriptionView(
+                    viewModel.viewData?.descriptionMarkdownContent ?? "",
+                    isLoading: viewModel.isLoading
+                )
 
-                RespondWithQuestionView { selectedQuestion in
+                RespondWithQuestionView(isLoading: viewModel.isLoading) { selectedQuestion in
                     viewModel.showResponseSheet(coverLetterText: selectedQuestion.messageText)
                 }
             }
 
-            RespondButtonView {
+            RespondButtonView(isLoading: viewModel.isLoading) {
                 viewModel.showResponseSheet()
             }
 
@@ -79,22 +84,39 @@ fileprivate struct ContentContainerView<Content: View>: View {
 }
 
 fileprivate struct HeaderView: View {
+    @State private var width: CGFloat = .zero
+
     let viewData: VacancyDetailViewData?
+    let isLoading: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text(viewData?.title ?? "...")
+            Text(viewData?.title ?? "")
                 .font(TextStyle.title22)
+                .skeleton(isLoading: isLoading, width: width * 0.75, height: 22)
+                .shimmeringWhiteSoft(active: isLoading)
 
             Group {
-                Text(viewData?.salary ?? "...")
+                if let viewData {
+                    Text(viewData.salary ?? "Уровень дохода не указан")
+                        .font(viewData.salary != nil ? TextStyle.title16 : TextStyle.text14)
+                        .skeleton(isLoading: isLoading, width: width * 0.55, height: 20)
+                        .shimmeringWhiteSoft(active: isLoading)
+
+                } else {
+                    Text("")
+                        .skeleton(isLoading: isLoading, width: width * 0.55, height: 20)
+                        .shimmeringWhiteSoft(active: isLoading)
+                }
 
                 VStack(alignment: .leading, spacing: 6) {
-                    if let experience = viewData?.experience {
-                        Text("Требуемый опыт: \(experience)")
-                    }
+                    Text("Требуемый опыт: \(viewData?.experience ?? "")")
+                        .skeleton(isLoading: isLoading, width: width * 0.4, height: 16)
+                        .shimmeringWhiteSoft(active: isLoading)
 
-                    Text(viewData?.attributes ?? "...")
+                    Text(viewData?.attributes ?? "")
+                        .skeleton(isLoading: isLoading, width: width * 0.4, height: 16)
+                        .shimmeringWhiteSoft(active: isLoading)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -102,12 +124,14 @@ fileprivate struct HeaderView: View {
         }
         .foregroundStyle(AppColor.Text.main.suiColor)
         .frame(maxWidth: .infinity, alignment: .leading)
+        .getContentSize(width: $width)
     }
 }
 
 fileprivate struct StatisticView: View {
     let responsesCount: Int
     let visitorsNow: Int
+    let isLoading: Bool
 
     var body: some View {
         HStack {
@@ -115,11 +139,15 @@ fileprivate struct StatisticView: View {
                 text: "\(responsesCount) человек уже откликнулись",
                 image: .Icons.statisticPerson
             )
+            .skeleton(isLoading: isLoading, color: .Shimmer.textGreen1, height: 50)
+            .shimmeringWhiteSoft(active: isLoading)
 
             VacancyActualStatView(
                 text: "\(visitorsNow) человека сейчас смотрят",
                 image: .Icons.statisticEye
             )
+            .skeleton(isLoading: isLoading, color: .Shimmer.textGreen1, height: 50)
+            .shimmeringWhiteSoft(active: isLoading)
         }
         .padding(.top, 27)
     }
@@ -128,9 +156,11 @@ fileprivate struct StatisticView: View {
 
 fileprivate struct DescriptionView: View {
     let markdownContent: String
+    let isLoading: Bool
 
-    init(_ markdownContent: String) {
+    init(_ markdownContent: String, isLoading: Bool) {
         self.markdownContent = markdownContent
+        self.isLoading = isLoading
     }
 
     var body: some View {
@@ -138,6 +168,8 @@ fileprivate struct DescriptionView: View {
             .foregroundStyle(Color.Text.main)
             .font(TextStyle.text14)
             .lineSpacing(0.3)
+            .skeleton(isLoading: isLoading, height: 90)
+            .shimmeringWhiteSoft(active: isLoading)
             .padding(.top, 16)
             .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -145,7 +177,10 @@ fileprivate struct DescriptionView: View {
 }
 
 fileprivate struct RespondWithQuestionView: View {
+    let isLoading: Bool
     let onTapQuestion: (VacancyResponseTemplate) -> Void
+
+    @State var width: CGFloat = .zero
 
     var body: some View {
         VStack(spacing: 8) {
@@ -153,10 +188,14 @@ fileprivate struct RespondWithQuestionView: View {
                 Text("Задайте вопрос работодателю")
                     .font(TextStyle.title14)
                     .foregroundStyle(Color.Text.main)
+                    .skeleton(isLoading: isLoading, width: width * 0.85, height: 20)
+                    .shimmeringWhiteSoft(active: isLoading)
 
                 Text("Он получит его с откликом на вакансию")
                     .font(TextStyle.text14)
                     .foregroundStyle(Color.Text.second)
+                    .skeleton(isLoading: isLoading, width: width * 0.6, height: 18)
+                    .shimmeringWhiteSoft(active: isLoading)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -171,13 +210,17 @@ fileprivate struct RespondWithQuestionView: View {
                 }
             }
             .frame(maxWidth: .infinity)
+            .skeleton(isLoading: isLoading, height: 60)
+            .shimmeringWhiteSoft(active: isLoading)
         }
+        .getContentSize(width: $width)
         .padding(.top, 27)
     }
 
 }
 
 fileprivate struct RespondButtonView: View {
+    let isLoading: Bool
     let onTapButton: () -> Void
 
     var body: some View {
@@ -192,6 +235,12 @@ fileprivate struct RespondButtonView: View {
                     bgColor: .Button.green
                 ))
                 .frame(maxWidth: .infinity)
+                .skeleton(
+                    isLoading: isLoading,
+                    color: .Shimmer.textGreen1,
+                    height: FillRectangleButtonStyle.defaultHeight
+                )
+                .shimmeringWhiteSoft(active: isLoading)
                 .safeAreaPadding(16)
             }
             .background(.bgMain)
@@ -204,6 +253,7 @@ fileprivate struct RespondButtonView: View {
 struct VacancyDetailScreen_Previews: PreviewProvider {
 
     struct Container: View {
+        @StateObject private var diContainer = AppDIContainer()
         @State private var path = [String]()
 
         var body: some View {
@@ -212,7 +262,10 @@ struct VacancyDetailScreen_Previews: PreviewProvider {
                     EmptyView()
                         .navigationDestination(for: String.self) { view in
                             VacancyDetailScreen(
-                                viewModel: .init(vacancyId: Vacancy.testVacancy.id)
+                                viewModel: .init(
+                                    vacancyService: diContainer.vacancyService,
+                                    vacancyId: Vacancy.testVacancy.id
+                                )
                             )
                         }
                         .onAppear {

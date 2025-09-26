@@ -12,7 +12,10 @@ struct SearchTab: View {
                     switch route {
                     case .vacancyDetail(let vacancyId):
                         VacancyDetailScreen(
-                            viewModel: .init(vacancyId: vacancyId)
+                            viewModel: .init(
+                                vacancyService: di.vacancyService,
+                                vacancyId: vacancyId
+                            )
                         )
 
                     default:

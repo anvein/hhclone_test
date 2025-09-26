@@ -1,10 +1,12 @@
 import SwiftUI
 
 struct FillRectangleButtonStyle: ButtonStyle {
+    static let defaultHeight: CGFloat = 46
+
     var isDisabled: Bool = false
     var bgColor: Color = .Button.blue
     var disabledColor: Color = .Button.disableGrey
-    var height: CGFloat = 46
+    var height: CGFloat = Self.defaultHeight
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
