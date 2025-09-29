@@ -48,19 +48,13 @@ struct VacancyDetailScreen: View {
         }
         .background(.bgMain)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                NavigationBarFavouriteButton(
-                    isFavourite: viewModel.viewData?.isFavourite ?? false,
-                    isLoading: viewModel.isLoading
-                ) {
-                    viewModel.toggleIsFavourite()
-                }
-            }
+            NavigationBarToolbar(viewModel: viewModel)
         }
         .vacancyResponseSheet(
             viewModel: $viewModel.responseSheetViewModel,
             height: $viewModel.responseSheetHeight
         )
+        .testFunctionalAlert(text: $viewModel.alertText)
         .onAppear {
             viewModel.loadVacancy()
         }
@@ -255,61 +249,83 @@ fileprivate struct RespondButtonView: View {
     }
 }
 
-fileprivate struct NavigationBarFavouriteButton: View {
-    let isFavourite: Bool
-    let isLoading: Bool
-    let onTapFavourite: () -> Void
+fileprivate struct NavigationBarToolbar: ToolbarContent {
+    @ObservedObject var viewModel: VacancyDetailViewModel
 
-    var body: some View {
-        let size: CGFloat = 26
-        Button {
-            onTapFavourite()
-        } label: {
-            Image(
-                uiImage: isFavourite
-                ? AppImage.Icons.heartFill.image
-                : AppImage.Icons.heart.image
-            )
-            .resizable()
-            .tint(AppColor.grey4.suiColor)
-            .frame(width: size, height: size)
-            .id(isFavourite)
+    var body: some ToolbarContent {
+        ToolbarItemGroup(placement: .topBarTrailing) {
+            Button {
+                viewModel.alertText = .init(
+                    text: "Обновить поле isHidden у вакансии + сделать глаз закрытым"
+                )
+            } label: {
+                Image(.Icons.eye)
+                .resizable()
+                .tint(AppColor.grey4.suiColor)
+                .disabled(viewModel.isLoading)
+                .frame(size: 28)
+            }
+            
+            Button {
+                viewModel.alertText = .init(text: "Показать экран шэринга вакансии")
+            } label: {
+                Image(.Icons.share)
+                .resizable()
+                .tint(AppColor.grey4.suiColor)
+                .disabled(viewModel.isLoading)
+                .frame(size: 24)
+            }
+
+            let favouriteSize: CGFloat = 26
+            let isFavourite = viewModel.viewData?.isFavourite ?? false
+            Button {
+                viewModel.toggleIsFavourite()
+            } label: {
+                Image(isFavourite ? .Icons.heartFill : .Icons.heart)
+                    .resizable()
+                    .renderingMode(.template)
+                    .foregroundStyle(isFavourite ? Color.Button.blue : .white)
+                    .frame(size: favouriteSize)
+                    .id(isFavourite)
+            }
+            .skeleton(isLoading: viewModel.isLoading, width: favouriteSize, height: favouriteSize)
+            .shimmeringWhiteSoft(active: viewModel.isLoading)
         }
-        .skeleton(isLoading: isLoading, width: size, height: size)
-        .shimmeringWhiteSoft(active: isLoading)
     }
 }
 
+
 // MARK: - Preview
 
-struct VacancyDetailScreen_Previews: PreviewProvider {
+struct VacancyDetailScreen_Preview: PreviewProvider {
 
     struct Container: View {
         @StateObject private var diContainer = AppDIContainer()
-        @State private var path = [String]()
 
         var body: some View {
             TabView {
-                NavigationStack(path: $path) {
-                    EmptyView()
-                        .navigationDestination(for: String.self) { view in
-                            VacancyDetailScreen(
-                                viewModel: .init(
-                                    vacancyService: diContainer.vacancyService,
-                                    vacancyId: Vacancy.testVacancy.id
-                                )
-                            )
+                NavigationStack {
+                    VacancyDetailScreen(
+                        viewModel: .init(
+                            vacancyService: diContainer.vacancyService,
+                            vacancyId: Vacancy.testVacancy.id
+                        )
+                    )
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            Button(action: {}) {
+                                Image(systemName: "chevron.left")
+                                Text("Назад")
+                            }
+                            .tint(.white)
                         }
-                        .onAppear {
-                            path.append("")
-                        }
-                }
-                .tabItem {
-                    Image(uiImage: AppImage.Icons.search.image)
-                    Text("Поиск")
+                    }
+                    .toolbarBackground(.black, for: .navigationBar)
+                    .toolbarBackground(.visible, for: .navigationBar)
+                    .toolbarBackground(.black, for: .tabBar)
+                    .toolbarBackground(.visible, for: .tabBar)
                 }
                 .background(.black)
-                .tag(0)
             }
         }
     }

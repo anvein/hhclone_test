@@ -18,7 +18,7 @@ struct Vacancy: Identifiable, Hashable {
     let salary: SalaryRange?
 
     let employmentType: EmploymentType?
-    var schedule: Set<Schedule> = []
+    var schedule: Array<Schedule> = []
     let businessTrip: BusinessTripType?
     let statistic: VacancyStatistic
 }

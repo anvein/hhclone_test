@@ -26,6 +26,7 @@ internal enum AssetImages {
     internal enum Icons {
       internal static let employerVerify = ImageAsset(name: "Icons/employerVerify")
       internal static let envelop = ImageAsset(name: "Icons/envelop")
+      internal static let eye = ImageAsset(name: "Icons/eye")
       internal static let geotag = ImageAsset(name: "Icons/geotag")
       internal static let heartFill = ImageAsset(name: "Icons/heart.fill")
       internal static let heart = ImageAsset(name: "Icons/heart")
@@ -33,6 +34,7 @@ internal enum AssetImages {
       internal static let messages = ImageAsset(name: "Icons/messages")
       internal static let person = ImageAsset(name: "Icons/person")
       internal static let search = ImageAsset(name: "Icons/search")
+      internal static let share = ImageAsset(name: "Icons/share")
       internal static let sortArrows = ImageAsset(name: "Icons/sortArrows")
       internal static let star = ImageAsset(name: "Icons/star")
       internal static let statisticEye = ImageAsset(name: "Icons/statisticEye")

@@ -38,7 +38,7 @@ final class VacancyMapper {
         )
     }
 
-    private func mapScheduleField(from apiDtoValues: [String]) -> Set<Schedule> {
-        Set(apiDtoValues.compactMap { Schedule.map(from: $0) })
+    private func mapScheduleField(from apiDtoValues: [String]) -> [Schedule] {
+        apiDtoValues.compactMap { Schedule.map(from: $0) }
     }
 }

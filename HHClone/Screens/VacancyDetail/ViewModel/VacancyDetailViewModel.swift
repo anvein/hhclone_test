@@ -21,6 +21,8 @@ final class VacancyDetailViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var isUpdating: Bool = false
 
+    @Published var alertText: AlertMessage? = nil
+
     // MARK: - Init
 
     init(vacancyService: VacancyService, vacancyId: UUID, onUpdate: OnVacancyUpdate? = nil) {
