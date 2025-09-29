@@ -9,8 +9,8 @@
 !*.xcodeproj/project.pbxproj
 
 
-#Pods/
-#Podfile.lock
+Pods/
+Podfile.lock
 .DS_Store
 
 .vscode/

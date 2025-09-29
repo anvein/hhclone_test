@@ -18,11 +18,11 @@ struct VacancyDetailScreen: View {
                 )
 
                 if let viewData = viewModel.viewData {
-                    VacancyEmployerLocationMapView(
+                    VacancyEmployerLocationView(
                         title: viewData.employerTitle,
                         isVerify: viewData.isEmployerVerify,
                         address: viewData.address,
-                        point: .init(latitude: 57.139684, longitude: 65.593876)
+                        point: viewData.locationPoint
                     )
                     .padding(.top, 19)
                 }
@@ -265,7 +265,7 @@ fileprivate struct NavigationBarToolbar: ToolbarContent {
                 .disabled(viewModel.isLoading)
                 .frame(size: 28)
             }
-            
+
             Button {
                 viewModel.alertText = .init(text: "Показать экран шэринга вакансии")
             } label: {

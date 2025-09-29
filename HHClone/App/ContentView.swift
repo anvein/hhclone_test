@@ -11,11 +11,6 @@ struct ContentView: View {
     }
 
     var body: some View {
-//        VacancyDetailScreen(
-//            viewModel: .init(vacancy: .testVacancy)
-//        )
-//        LoginCodeScreen(path: .constant([]), model: .init(loginType: .email("anvein@bk.ru")))
-
         Group {
             if isLoggedIn {
                 MainTabView()

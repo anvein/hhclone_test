@@ -9,7 +9,7 @@ struct Vacancy: Identifiable, Hashable {
 
     // employer
     let address: Address
-    let locationPoint: MapPoint?
+    let companyLocation: MapPoint?
     let employerTitle: String
     let isEmployerVerify: Bool
 
@@ -43,7 +43,7 @@ extension Vacancy {
 """,
         responsibilitiesMarkdownContent: "<p>Ответственность</p>",
         address: .init(city: "Минск", street: "Бирюзова", number: "4/5"),
-        locationPoint: .testPoint,
+        companyLocation: .testPoint,
         employerTitle: "Мобирикс",
         isEmployerVerify: true,
         experience: .from1to3years,
@@ -65,7 +65,7 @@ extension Vacancy {
             descriptionMarkdownContent: "<p>Хорошая вакансия</p>",
             responsibilitiesMarkdownContent: "<p>Ответственность</p>",
             address: .init(city: "Минск", street: "Бирюзова", number: "4/5"),
-            locationPoint: .testPoint,
+            companyLocation: .testPoint,
             employerTitle: "Мобирикс",
             isEmployerVerify: true,
             experience: .from1to3years,
@@ -80,7 +80,7 @@ extension Vacancy {
             descriptionMarkdownContent: "<p>Хорошая вакансия</p>",
             responsibilitiesMarkdownContent: "<p>Ответственность</p>",
             address: .init(city: "Минск", street: "Елизарова", number: "38"),
-            locationPoint: .testPoint,
+            companyLocation: .testPoint,
             employerTitle: "Еком дизайн",
             isEmployerVerify: true,
             experience: nil,

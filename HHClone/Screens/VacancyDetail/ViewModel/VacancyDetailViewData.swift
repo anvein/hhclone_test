@@ -1,4 +1,5 @@
 import Foundation
+import YandexMapsMobile
 
 struct VacancyDetailViewData {
     var id: UUID
@@ -6,7 +7,7 @@ struct VacancyDetailViewData {
     var title: String
     let descriptionMarkdownContent: String?
     let address: String
-    let locationPoint: MapPoint
+    let locationPoint: YMKPoint?
     let employerTitle: String
     let isEmployerVerify: Bool
     let experience: String?

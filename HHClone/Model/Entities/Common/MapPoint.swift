@@ -1,6 +1,10 @@
 struct MapPoint: Hashable {
     var latitude: Double
     var longitude: Double
+
+    static func map(from apiDto: LocationApiDto) -> Self {
+        .init(latitude: apiDto.latitude, longitude: apiDto.longitude)
+    }
 }
 
 extension MapPoint {

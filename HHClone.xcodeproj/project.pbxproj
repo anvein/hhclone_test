@@ -8,10 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		360054C42E785BA400D8ACEC /* Shimmer in Frameworks */ = {isa = PBXBuildFile; productRef = 360054C32E785BA400D8ACEC /* Shimmer */; };
+		F3F46DD0D0A95611DE32E882 /* Pods_HHClone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A61DE4FDBB881D66E786B074 /* Pods_HHClone.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		36F944632DF06D1300E9B2CD /* HHClone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HHClone.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A61DE4FDBB881D66E786B074 /* Pods_HHClone.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HHClone.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D9F8864E73FB6411C4923771 /* Pods-HHClone.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HHClone.release.xcconfig"; path = "Target Support Files/Pods-HHClone/Pods-HHClone.release.xcconfig"; sourceTree = "<group>"; };
+		E619013D24415624E97D22B0 /* Pods-HHClone.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HHClone.debug.xcconfig"; path = "Target Support Files/Pods-HHClone/Pods-HHClone.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -41,6 +45,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				360054C42E785BA400D8ACEC /* Shimmer in Frameworks */,
+				F3F46DD0D0A95611DE32E882 /* Pods_HHClone.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -50,6 +55,7 @@
 		360054C22E785BA400D8ACEC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A61DE4FDBB881D66E786B074 /* Pods_HHClone.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -60,6 +66,7 @@
 				36F944652DF06D1300E9B2CD /* HHClone */,
 				360054C22E785BA400D8ACEC /* Frameworks */,
 				36F944642DF06D1300E9B2CD /* Products */,
+				760AFBA28695E7E1E75B6D59 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -71,6 +78,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		760AFBA28695E7E1E75B6D59 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				E619013D24415624E97D22B0 /* Pods-HHClone.debug.xcconfig */,
+				D9F8864E73FB6411C4923771 /* Pods-HHClone.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -78,10 +94,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 36F9446E2DF06D1400E9B2CD /* Build configuration list for PBXNativeTarget "HHClone" */;
 			buildPhases = (
+				738D4188671B7C2D5EEBF65D /* [CP] Check Pods Manifest.lock */,
 				36F9447B2DF0712400E9B2CD /* Run SwiftGen */,
 				36F9445F2DF06D1300E9B2CD /* Sources */,
 				36F944602DF06D1300E9B2CD /* Frameworks */,
 				36F944612DF06D1300E9B2CD /* Resources */,
+				EB37726FA63E653E7D346C8D /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -172,6 +190,49 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "SWIFTGEN_PATH=$(which swiftgen)\n\nif [ -z \"$SWIFTGEN_PATH\" ]; then\n  if [ -x \"/opt/homebrew/bin/swiftgen\" ]; then\n    SWIFTGEN_PATH=\"/opt/homebrew/bin/swiftgen\"\n  elif [ -x \"/usr/local/bin/swiftgen\" ]; then\n    SWIFTGEN_PATH=\"/usr/local/bin/swiftgen\"\n  fi\nfi\n\nif [ -x \"$SWIFTGEN_PATH\" ]; then\n  \"$SWIFTGEN_PATH\" config run --config \"${PROJECT_DIR}/swiftgen.yml\" \nelse\n  echo \"warning: SwiftGen not installed. Install it via 'brew install swiftgen'\"\nfi\n";
+		};
+		738D4188671B7C2D5EEBF65D /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-HHClone-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		EB37726FA63E653E7D346C8D /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-HHClone/Pods-HHClone-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-HHClone/Pods-HHClone-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-HHClone/Pods-HHClone-resources.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -311,6 +372,7 @@
 		};
 		36F9446F2DF06D1400E9B2CD /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E619013D24415624E97D22B0 /* Pods-HHClone.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -341,6 +403,7 @@
 		};
 		36F944702DF06D1400E9B2CD /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D9F8864E73FB6411C4923771 /* Pods-HHClone.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;

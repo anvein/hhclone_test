@@ -6,6 +6,7 @@ struct VacancyItemResponseDto: ApiResponseDto {
     let address: AddressApiDto
     let company: String
     let isCompanyVerify: Bool
+    let companyLocation: LocationApiDto?
     let experience: String
     let publishedDate: Date
     let isFavorite: Bool

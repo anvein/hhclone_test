@@ -46,6 +46,10 @@ let vacancies = [
         },
         "company": "Шафигуллин Шакир",
         "isCompanyVerify": true,
+        "companyLocation": {
+            "latitude": 57.137287,
+            "longitude": 65.559103
+        },
         "experience": "from1to3years",
         "publishedDate": "2024-03-06",
         "isFavorite": false,
@@ -84,6 +88,10 @@ let vacancies = [
         },
         "company": "Мобирикс",
         "isCompanyVerify": false,
+        "companyLocation": {
+            "latitude": 57.119345,
+            "longitude": 65.564053
+        },
         "experience": "from1to3years",
         "publishedDate": "2024-02-20",
         "isFavorite": false,
@@ -114,6 +122,10 @@ let vacancies = [
         },
         "company": "Aston",
         "isCompanyVerify": false,
+        "companyLocation": {
+            "latitude": 57.141985,
+            "longitude": 65.548595
+        },
         "experience": "from3to6years",
         "publishedDate": "2024-02-28",
         "isFavorite": true,
@@ -144,6 +156,10 @@ let vacancies = [
         },
         "company": "Алабуга. Маркетинг и PR",
         "isCompanyVerify": true,
+        "companyLocation": {
+            "latitude": 55.744686,
+            "longitude": 37.66285
+        }, 
         "experience": "no",
         "publishedDate": "2024-03-02",
         "isFavorite": false,

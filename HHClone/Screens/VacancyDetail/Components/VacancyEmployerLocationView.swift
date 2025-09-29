@@ -1,11 +1,14 @@
 import SwiftUI
+import YandexMapsMobile
 
-struct VacancyEmployerLocationMapView: View {
+struct VacancyEmployerLocationView: View {
 
     var title: String
     var isVerify: Bool
     var address: String
-    var point: MapPoint
+    var point: YMKPoint?
+
+    @State var width: CGFloat = .zero
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -22,27 +25,31 @@ struct VacancyEmployerLocationMapView: View {
                     .padding(.top, 2)
             }
 
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color.grey3)
-                .frame(maxWidth: .infinity, idealHeight: 58)
+            if let point {
+                YandexMapView(coordinate: point, isGestureEnabled: false)
+                    .frame(maxWidth: .infinity, idealHeight: width * 0.21)
+                    .clipRoundedRectangle(cornerRadius: 8)
+            }
 
             Text(address)
                 .font(TextStyle.text14)
                 .foregroundStyle(Color.Text.main)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 12)
         .padding(.horizontal, 16)
         .background(Color.bgSecondary)
         .clipShape(
             RoundedRectangle(cornerRadius: 8)
         )
+        .getContentSize(width: $width)
     }
 
 }
 
 #Preview {
     VStack {
-        VacancyEmployerLocationMapView(
+        VacancyEmployerLocationView(
             title: "Мобирикс",
             isVerify: true,
             address: "Минск, улица Бирюзова, 4/5",

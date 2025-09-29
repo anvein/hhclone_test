@@ -77,6 +77,7 @@ final class SearchVacancyViewModel: ObservableObject {
 
                 await MainActor.run {
                     self.pagination = result.pagination
+
                     if append {
                         self.vacanciesModels += result.vacancies
                         self.vacancies += result.vacancies.map({ .init(vacancy: $0) })

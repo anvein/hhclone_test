@@ -31,6 +31,7 @@ internal enum AssetImages {
       internal static let heartFill = ImageAsset(name: "Icons/heart.fill")
       internal static let heart = ImageAsset(name: "Icons/heart")
       internal static let list = ImageAsset(name: "Icons/list")
+      internal static let mapWorkPin = ImageAsset(name: "Icons/mapWorkPin")
       internal static let messages = ImageAsset(name: "Icons/messages")
       internal static let person = ImageAsset(name: "Icons/person")
       internal static let search = ImageAsset(name: "Icons/search")

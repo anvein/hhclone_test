@@ -22,7 +22,7 @@ final class VacancyMapper {
             descriptionMarkdownContent: apiDto.description,
             responsibilitiesMarkdownContent: apiDto.responsibilities,
             address: Address.map(from: apiDto.address),
-            locationPoint: nil,
+            companyLocation: apiDto.companyLocation.flatMap { MapPoint.map(from: $0) },
             employerTitle: apiDto.company,
             isEmployerVerify: apiDto.isCompanyVerify,
             experience: Experience.map(from: apiDto.experience),

@@ -1,5 +1,6 @@
 import SwiftUI
 import Foundation
+import YandexMapsMobile
 
 final class VacancyDetailViewModel: ObservableObject {
 
@@ -116,7 +117,7 @@ final class VacancyDetailViewModel: ObservableObject {
             title: vacancy.title,
             descriptionMarkdownContent: vacancy.descriptionMarkdownContent,
             address: formatAddress(vacancy.address),
-            locationPoint: .init(latitude: 0, longitude: 0),
+            locationPoint: convert(vacancy.companyLocation),
             employerTitle: vacancy.employerTitle,
             isEmployerVerify: vacancy.isEmployerVerify,
             experience: vacancy.experience?.text,
@@ -166,6 +167,13 @@ final class VacancyDetailViewModel: ObservableObject {
         }
 
         return attributes.joined(separator: ", ").capitalizingFirstLetter()
+    }
+    
+    // TODO: вынести в конвертер координат
+    private func convert(_ mapPoint: MapPoint?) -> YMKPoint? {
+        guard let mapPoint else { return nil }
+
+        return .init(latitude: mapPoint.latitude, longitude: mapPoint.longitude)
     }
 
 }
